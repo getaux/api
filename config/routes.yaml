@@ -1,7 +1,18 @@
-controllers:
-    resource: ../src/Controller/
+app.controllers:
+    resource: ../src/Controller/*.php
     type: annotation
+
+api.controllers:
+    resource: ../src/Controller/Api
+    type: annotation
+    prefix:
+        name: 'api/v1'
 
 kernel:
     resource: ../src/Kernel.php
     type: annotation
+
+app_swagger_ui_v1:
+    path: /api/v1/documentation
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }

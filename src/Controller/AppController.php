@@ -8,11 +8,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AppController extends AbstractController
 {
-    #[Route('', name: 'api_index')]
+    #[Route(name: 'app_index')]
     public function index(): Response
     {
-        return $this->json([
-            'message' => 'Hello world!',
-        ]);
+        return $this->redirectToRoute('app_swagger_ui_v1');
     }
 }

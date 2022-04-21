@@ -12,6 +12,12 @@ services:
     restart: unless-stopped
     volumes:
       - php_socket:/var/run/php
+      # The "cached" option has no effect on Linux but improves performance on Mac
+      - ./:/srv/app:rw,cached
+      - ./docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini
+      # If you develop on Mac you can remove the var/ directory from the bind-mount
+      # for better performance by enabling the next line
+      - /srv/app/var
     healthcheck:
       interval: 10s
       timeout: 3s
@@ -19,6 +25,7 @@ services:
       start_period: 30s
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-symfony}:${POSTGRES_PASSWORD:-ChangeMe}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-13}
+      APP_ENV: dev
 
   caddy:
     build:
@@ -35,6 +42,8 @@ services:
       - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./public:/srv/app/public:ro
     ports:
       # HTTP
       - target: 80
