@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Auction;
+use App\Entity\Asset;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Auction|null find($id, $lockMode = null, $lockVersion = null)
- * @method Auction|null findOneBy(array $criteria, array $orderBy = null)
- * @method Auction[]    findAll()
- * @method Auction[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Asset|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Asset|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Asset[]    findAll()
+ * @method Asset[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AuctionRepository extends ServiceEntityRepository
+class AssetRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Auction::class);
+        parent::__construct($registry, Asset::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(Auction $entity, bool $flush = true): void
+    public function add(Asset $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -40,7 +39,7 @@ class AuctionRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(Auction $entity, bool $flush = true): void
+    public function remove(Asset $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {

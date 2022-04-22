@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +12,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Health Check')]
 class HealthCheckController extends AbstractController
 {
-    #[Route('/ping', name: 'health_check_ping', methods: ['GET'])]
+    #[Route('/ping', name: 'api_health_check_ping', methods: ['GET'])]
     #[OA\Response(
         response: 200,
         description: 'I\'m alive!',
