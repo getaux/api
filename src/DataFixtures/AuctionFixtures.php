@@ -27,7 +27,7 @@ class AuctionFixtures extends Fixture
             $auction->setQuantity((string)rand($minQuantity, $maxQuantity));
             $auction->setDecimals(18);
 
-            $auction->setType(Auction::TYPE[rand(0, count(Auction::TYPE) - 1)]);
+            $auction->setType(Auction::TYPES[rand(0, count(Auction::TYPES) - 1)]);
             $auction->setStatus(Auction::STATUS[rand(0, count(Auction::STATUS) - 1)]);
 
             $auction->setTokenType(TokenHelper::TOKENS[rand(0, count(TokenHelper::TOKENS) - 1)]);

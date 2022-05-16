@@ -29,7 +29,7 @@ class Auction
     public const TYPE_ENGLISH = 'english';
     public const TYPE_DUTCH = 'dutch';
 
-    public const TYPE = [
+    public const TYPES = [
         self::TYPE_ENGLISH,
         self::TYPE_DUTCH,
     ];
@@ -71,7 +71,7 @@ class Auction
 
     #[ORM\Column(type: 'datetime')]
     #[Groups('auction')]
-    private \DateTimeInterface $endAt;
+    private ?\DateTimeInterface $endAt;
 
     public function getId(): ?int
     {
@@ -167,7 +167,7 @@ class Auction
         return $this->endAt;
     }
 
-    public function setEndAt(\DateTimeInterface $endAt): self
+    public function setEndAt(\DateTimeInterface $endAt = null): self
     {
         $this->endAt = $endAt;
 

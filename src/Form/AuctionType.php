@@ -6,13 +6,12 @@ namespace App\Form;
 
 use App\Entity\Auction;
 use App\Helper\TokenHelper;
-use DateTimeInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Choice;
-use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class AuctionType extends AbstractType
@@ -21,27 +20,32 @@ class AuctionType extends AbstractType
     {
         $builder->add('type', TextType::class, [
             'constraints' => [
-                new NotBlank([], 'type should not be blank'),
+                new NotBlank([], 'Missing parameter: type field should not be blank'),
+                new Choice([], Auction::TYPES, null, null, null, null, null, 'Invalid parameter: type field is invalid'),
             ]
         ])->add('transferId', TextType::class, [
             'constraints' => [
-                new NotBlank([], 'transferId should not be blank'),
+                new NotBlank([], 'Missing parameter: transferId field should not be blank'),
             ]
         ])->add('quantity', TextType::class, [
             'constraints' => [
-                new NotBlank([], 'transferId should not be blank'),
+                new NotBlank([], 'Missing parameter: quantity field should not be blank'),
             ]
         ])->add('decimals', TextType::class, [
             'constraints' => [
-                new NotBlank([], 'decimals should not be blank'),
+                new NotBlank([], 'Missing parameter: decimals field should not be blank'),
             ]
         ])->add('tokenType', TextType::class, [
             'constraints' => [
-                new NotBlank([], 'tokenType should not be blank'),
-                new Choice([], TokenHelper::TOKENS, null, null, null, null, null, 'tokenType is invalid'),
+                new NotBlank([], 'Missing parameter: tokenType field should not be blank'),
+                new Choice([], TokenHelper::TOKENS, null, null, null, null, null, 'Invalid parameter: tokenType field is invalid'),
             ]
-        ])->add('endAt', DateTime::class, [
-            'format' => DateTimeInterface::ISO8601
+        ])->add('endAt', DateTimeType::class, [
+            'widget' => 'single_text',
+            'html5' => false,
+            'constraints' => [
+                new NotBlank([], 'Missing parameter: endAt field should not be blank'),
+            ],
         ]);
     }
 

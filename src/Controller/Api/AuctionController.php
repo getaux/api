@@ -6,7 +6,9 @@ namespace App\Controller\Api;
 
 use App\Entity\Auction;
 use App\Form\AuctionType;
+use App\Helper\ResponseHelper;
 use App\Repository\AuctionRepository;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +35,11 @@ class AuctionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_auctions_show', methods: 'GET')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Auction::class, groups: ['auction'])
+    )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
         $auction = $auctionRepository->find((int)$id);
@@ -48,7 +55,7 @@ class AuctionController extends AbstractController
 
     #[Route(name: 'api_auctions_create', methods: 'POST')]
     #[OA\RequestBody(
-        description: 'Order to create',
+        description: 'Auction to create',
         required: true,
         content: new OA\JsonContent(
             properties: [
@@ -93,18 +100,18 @@ class AuctionController extends AbstractController
         )
 
     )]
-    public function create(Request $request): Response
+    public function create(Request $request, AuctionRepository $auctionRepository): Response
     {
         $auction = new Auction();
         $form = $this->createForm(AuctionType::class, $auction);
 
-        $form->submit((array)json_decode((string)$request->getContent(), true));
+        $form->submit((array)json_decode((string)$request->getContent(), false));
 
         if ($form->isValid()) {
-            /** @todo make API call to get details of transfer */
+            /* @todo fetch transfer then link it to the auction */
+            $auctionRepository->add($auction);
         } else {
-            /** @todo improve me later (explode + array of errors?) */
-            throw new BadRequestException((string)$form->getErrors(true));
+            throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [

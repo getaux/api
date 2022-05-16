@@ -15,9 +15,9 @@
 - `docker-compose up -d`
 - Visit https://api.auctionx.localhost/
 
-### Fix Chrome/Brave SSL locally
+## Fix Chrome/Brave SSL locally
 
-If you have a TLS trust issues, you can copy the self-signed certificate from Caddy and add it to the trusted certificates :
+If you have a TLS trust issues, you can copy the self-signed certificate from Caddy and add it to the trusted certificates:
 
 ```bash
 # Mac
