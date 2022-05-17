@@ -35,7 +35,7 @@ class AuctionController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GetAuction')
+                    items: new OA\Items(ref: '#/components/schemas/GetAuctionWithAsset')
                 )
             ],
         )
@@ -48,7 +48,7 @@ class AuctionController extends AbstractController
         return $this->json([
             'result' => $auctions
         ], Response::HTTP_OK, [], [
-            'groups' => Auction::GROUP_GET_AUCTION
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
         ]);
     }
 
@@ -61,7 +61,7 @@ class AuctionController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuction')
+        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
     )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
@@ -72,7 +72,7 @@ class AuctionController extends AbstractController
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => Auction::GROUP_GET_AUCTION
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
         ]);
     }
 
@@ -93,7 +93,7 @@ class AuctionController extends AbstractController
     #[OA\Response(
         response: 201,
         description: 'Created',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuction')
+        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
     )]
     public function create(Request $request, AuctionRepository $auctionRepository): Response
     {
@@ -110,7 +110,7 @@ class AuctionController extends AbstractController
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => Auction::GROUP_GET_AUCTION
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
         ]);
     }
 }
