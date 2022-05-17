@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity\Utils;
 
+use App\Entity\Asset;
+use App\Entity\Auction;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -12,7 +14,7 @@ trait TimestampTrait
 {
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups('auction')]
+    #[Groups([Auction::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
     protected \DateTimeImmutable $createdAt;
 
     #[Gedmo\Timestampable(on: 'update')]

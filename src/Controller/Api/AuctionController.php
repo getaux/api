@@ -23,19 +23,19 @@ class AuctionController extends AbstractController
 {
     #[Route(name: 'api_auctions_list', methods: 'GET')]
     #[OA\Get(
-        operationId: 'get-auctions',
+        operationId: Auction::GROUP_GET_AUCTIONS,
         description: 'Get a list of auctions',
         summary: 'Get a list of auctions'
     )]
     #[OA\Response(
         response: 200,
-        description: 'Successful response',
+        description: 'OK',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: new Model(type: Auction::class, groups: ['auction']))
+                    items: new OA\Items(ref: '#/components/schemas/GetAuction')
                 )
             ],
         )
@@ -48,20 +48,20 @@ class AuctionController extends AbstractController
         return $this->json([
             'result' => $auctions
         ], Response::HTTP_OK, [], [
-            'groups' => 'auction'
+            'groups' => Auction::GROUP_GET_AUCTION
         ]);
     }
 
     #[Route('/{id}', name: 'api_auctions_show', methods: 'GET')]
     #[OA\Get(
-        operationId: 'get-auction',
+        operationId: Auction::GROUP_GET_AUCTION,
         description: 'Get details of an auction',
         summary: 'Get details of an auction'
     )]
     #[OA\Response(
         response: 200,
-        description: 'Successful response',
-        content: new Model(type: Auction::class, groups: ['auction'])
+        description: 'OK',
+        content: new OA\JsonContent(ref: '#/components/schemas/GetAuction')
     )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
@@ -72,13 +72,13 @@ class AuctionController extends AbstractController
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => 'auction'
+            'groups' => Auction::GROUP_GET_AUCTION
         ]);
     }
 
     #[Route(name: 'api_auctions_create', methods: 'POST')]
     #[OA\Post(
-        operationId: 'create-auction',
+        operationId: Auction::GROUP_POST_AUCTION,
         description: 'Create an auction',
         summary: 'Create an auction'
     )]
@@ -86,52 +86,14 @@ class AuctionController extends AbstractController
         description: 'Auction to create',
         required: true,
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(
-                    property: 'transferId',
-                    description: "transferId comes from IMX SDK after transfer to escrow wallet",
-                    type: 'string',
-                    example: '1234567',
-                ),
-                new OA\Property(
-                    property: 'type',
-                    description: "2 types allowed here, english or dutch",
-                    type: 'string',
-                    enum: ['dutch', 'english'],
-                    example: 'dutch'
-                ),
-                new OA\Property(
-                    property: 'quantity',
-                    description: "Starting price of the auction should be linked with decimals field",
-                    type: 'string',
-                    example: '100000000000000',
-                ),
-                new OA\Property(
-                    property: 'decimals',
-                    description: "Decimals of quantity",
-                    type: 'integer',
-                    example: '18',
-                ),
-                new OA\Property(
-                    property: 'tokenType',
-                    description: "Token of auction (ETH, IMX, USDC, etc.)",
-                    type: 'string',
-                    example: 'ETH',
-                ),
-                new OA\Property(
-                    property: 'endAt',
-                    description: "End date of the auction",
-                    type: 'datetime',
-                    example: '2025-01-31T00:00:00+00:00',
-                )
-            ],
+            ref: '#/components/schemas/PostAuction',
             type: 'object'
         )
     )]
     #[OA\Response(
-        response: 200,
-        description: 'Successful response',
-        content: new Model(type: Auction::class, groups: ['auction'])
+        response: 201,
+        description: 'Created',
+        content: new OA\JsonContent(ref: '#/components/schemas/GetAuction')
     )]
     public function create(Request $request, AuctionRepository $auctionRepository): Response
     {
@@ -142,13 +104,13 @@ class AuctionController extends AbstractController
 
         if ($form->isValid()) {
             /* @todo fetch transfer then link it to the auction */
-            $auctionRepository->add($auction);
+            //$auctionRepository->add($auction);
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => 'auction'
+            'groups' => Auction::GROUP_GET_AUCTION
         ]);
     }
 }

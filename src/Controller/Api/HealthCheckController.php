@@ -23,7 +23,7 @@ class HealthCheckController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new Model(type: HealthCheck::class)
+        content: new Model(type: HealthCheck::class, groups: [HealthCheck::GROUP_GET_HEALTH_CHECK])
     )]
     public function ping(): Response
     {

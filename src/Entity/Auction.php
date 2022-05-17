@@ -37,51 +37,60 @@ class Auction
         self::TYPE_DUTCH,
     ];
 
+    public const GROUP_GET_AUCTIONS = 'get-auctions';
+    public const GROUP_GET_AUCTION = 'get-auction';
+    public const GROUP_GET_AUCTION_WITH_ASSET = 'get-auction-with-asset';
+    public const GROUP_POST_AUCTION = 'post-auction';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups('auction')]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Auction X internal ID of the auction', format: 'int')]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups('auction')]
-    #[OA\Property(description: 'Type of the auction', format: 'string', enum: self::TYPES)]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
+    #[OA\Property(description: 'Type of the auction', format: 'string', enum: self::TYPES, example: self::TYPE_DUTCH)]
     private string $type;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups('auction')]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Status of the auction', format: 'string', enum: self::STATUS)]
     private string $status;
 
     #[ORM\Column(type: 'bigint')]
-    #[Groups('auction')]
-    #[OA\Property(description: 'IMX transfer ID (asset deposit)', format: 'string')]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, self::GROUP_GET_AUCTION_WITH_ASSET])]
+    #[OA\Property(description: 'IMX transfer ID (asset deposit)', format: 'string', example: 1234567)]
     private string $transferId;
 
     #[ORM\Column(type: 'bigint')]
-    #[Groups('auction')]
-    #[OA\Property(description: 'Quantity of this asset (price)', format: 'string')]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
+    #[OA\Property(description: 'Quantity of this asset (price)', format: 'string', example: 1000000000000000000)]
     private string $quantity;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups('auction')]
-    #[OA\Property(description: 'Number of decimals supported by this asset', format: 'int')]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
+    #[OA\Property(description: 'Number of decimals supported by this asset', format: 'int', example: 18)]
     private int $decimals;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups('auction')]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, self::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Currency of the auction', format: 'string', enum: TokenHelper::TOKENS)]
     private string $tokenType;
 
     #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'auctions')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('auction')]
-    #[OA\Property(description: 'Asset related to the auction')]
+    #[Groups([self::GROUP_GET_AUCTION_WITH_ASSET])]
+    #[OA\Property(
+        ref: '#/components/schemas/GetAssetWithAuctions',
+        description: 'Asset related to the auction',
+        type: 'object',
+    )]
     private ?Asset $asset;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups('auction')]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
     #[OA\Property(description: 'End timestamp of this auction', type: 'string', format: 'date-time')]
     private ?\DateTimeInterface $endAt;
 
