@@ -22,6 +22,10 @@ use OpenApi\Attributes as OA;
 class AuctionController extends AbstractController
 {
     #[Route(name: 'api_auctions_list', methods: 'GET')]
+    #[OA\Get(
+        description: 'Get a list of auctions',
+        summary: 'Get a list of auctions'
+    )]
     public function list(AuctionRepository $auctionRepository): Response
     {
         /** @todo refactor with parameters */
@@ -35,6 +39,10 @@ class AuctionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_auctions_show', methods: 'GET')]
+    #[OA\Get(
+        description: 'Get details of an auction',
+        summary: 'Get details of an auction'
+    )]
     #[OA\Response(
         response: 200,
         description: 'Successful response',
@@ -54,6 +62,10 @@ class AuctionController extends AbstractController
     }
 
     #[Route(name: 'api_auctions_create', methods: 'POST')]
+    #[OA\Post(
+        description: 'Create an auction',
+        summary: 'Create an auction'
+    )]
     #[OA\RequestBody(
         description: 'Auction to create',
         required: true,
@@ -98,7 +110,11 @@ class AuctionController extends AbstractController
             ],
             type: 'object'
         )
-
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Auction::class, groups: ['auction'])
     )]
     public function create(Request $request, AuctionRepository $auctionRepository): Response
     {

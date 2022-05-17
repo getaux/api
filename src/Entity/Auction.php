@@ -8,6 +8,7 @@ use App\Entity\Utils\TimestampTrait;
 use App\Repository\AuctionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: AuctionRepository::class)]
 class Auction
@@ -38,6 +39,7 @@ class Auction
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups('auction')]
+    #[OA\Property()]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
