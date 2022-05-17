@@ -10,8 +10,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: AssetRepository::class)]
+#[OA\Schema(description: 'Asset linked to auction(s)')]
 class Asset
 {
     use TimestampTrait;
@@ -19,14 +21,17 @@ class Asset
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[OA\Property(description: 'Auction X internal ID of the asset', format: 'int')]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Internal Immutable X Token ID', format: 'string')]
     private string $internalId;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Address of the ERC721 contract', format: 'string')]
     private string $tokenAddress;
 
     #[ORM\OneToMany(mappedBy: 'asset', targetEntity: Auction::class)]
@@ -35,10 +40,12 @@ class Asset
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'URL of the image which should be used for this asset', format: 'string')]
     private string $imageUrl;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Name of this asset', format: 'string')]
     private string $name;
 
     public function __construct()

@@ -16,6 +16,7 @@ class HealthCheckController extends AbstractController
 {
     #[Route('/ping', name: 'api_health_check_ping', methods: ['GET'])]
     #[OA\Get(
+        operationId: 'get-health-check',
         description: 'Get health of the API',
         summary: 'Get health of the API'
     )]

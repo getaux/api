@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Entity\Utils\TimestampTrait;
+use App\Helper\TokenHelper;
 use App\Repository\AuctionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: AuctionRepository::class)]
+#[OA\Schema(description: 'Auction linked to an asset')]
 class Auction
 {
     use TimestampTrait;
@@ -39,40 +41,48 @@ class Auction
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups('auction')]
-    #[OA\Property()]
+    #[OA\Property(description: 'Auction X internal ID of the auction', format: 'int')]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Type of the auction', format: 'string', enum: self::TYPES)]
     private string $type;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Status of the auction', format: 'string', enum: self::STATUS)]
     private string $status;
 
     #[ORM\Column(type: 'bigint')]
     #[Groups('auction')]
+    #[OA\Property(description: 'IMX transfer ID (asset deposit)', format: 'string')]
     private string $transferId;
 
     #[ORM\Column(type: 'bigint')]
     #[Groups('auction')]
+    #[OA\Property(description: 'Quantity of this asset (price)', format: 'string')]
     private string $quantity;
 
     #[ORM\Column(type: 'integer')]
     #[Groups('auction')]
+    #[OA\Property(description: 'Number of decimals supported by this asset', format: 'int')]
     private int $decimals;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Currency of the auction', format: 'string', enum: TokenHelper::TOKENS)]
     private string $tokenType;
 
     #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'auctions')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups('auction')]
+    #[OA\Property(description: 'Asset related to the auction')]
     private ?Asset $asset;
 
     #[ORM\Column(type: 'datetime')]
     #[Groups('auction')]
+    #[OA\Property(description: 'End timestamp of this auction', type: 'string', format: 'date-time')]
     private ?\DateTimeInterface $endAt;
 
     public function getId(): ?int

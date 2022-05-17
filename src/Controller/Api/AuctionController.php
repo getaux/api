@@ -23,8 +23,22 @@ class AuctionController extends AbstractController
 {
     #[Route(name: 'api_auctions_list', methods: 'GET')]
     #[OA\Get(
+        operationId: 'get-auctions',
         description: 'Get a list of auctions',
         summary: 'Get a list of auctions'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'result',
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: Auction::class, groups: ['auction']))
+                )
+            ],
+        )
     )]
     public function list(AuctionRepository $auctionRepository): Response
     {
@@ -40,6 +54,7 @@ class AuctionController extends AbstractController
 
     #[Route('/{id}', name: 'api_auctions_show', methods: 'GET')]
     #[OA\Get(
+        operationId: 'get-auction',
         description: 'Get details of an auction',
         summary: 'Get details of an auction'
     )]
@@ -63,6 +78,7 @@ class AuctionController extends AbstractController
 
     #[Route(name: 'api_auctions_create', methods: 'POST')]
     #[OA\Post(
+        operationId: 'create-auction',
         description: 'Create an auction',
         summary: 'Create an auction'
     )]
@@ -81,7 +97,8 @@ class AuctionController extends AbstractController
                     property: 'type',
                     description: "2 types allowed here, english or dutch",
                     type: 'string',
-                    example: 'dutch',
+                    enum: ['dutch', 'english'],
+                    example: 'dutch'
                 ),
                 new OA\Property(
                     property: 'quantity',
