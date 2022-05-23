@@ -42,7 +42,7 @@ class Asset
     #[OA\Property(
         description: 'Auctions related to the asset',
         type: 'array',
-        items: new OA\Items(ref: '#/components/schemas/GetAuction')
+        items: new OA\Items(ref: '#/components/schemas/Auction.item')
     )]
     private Collection $auctions;
 

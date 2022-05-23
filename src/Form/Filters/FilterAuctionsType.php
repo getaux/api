@@ -29,8 +29,15 @@ class FilterAuctionsType extends AbstractType
                 ]),
             ],
             'invalid_message' => 'Invalid parameter: page_size field must be between 1 to 100',
-        ])->add('page', TextType::class, [
+        ])->add('page', IntegerType::class, [
             'required' => false,
+            'constraints' => [
+                new Range([
+                    'min' => 1,
+                    'notInRangeMessage' => 'Invalid parameter: page_size field must be between 1 to 100',
+                ]),
+            ],
+            'invalid_message' => 'Invalid parameter: page_size field must be between 1 to 100',
         ])->add('order_by', TextType::class, [
             'constraints' => [
                 new Choice([], self::ORDER_FIELDS, null, null, null, null, null, 'Invalid parameter: order_by field is invalid'),

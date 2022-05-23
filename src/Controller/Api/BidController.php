@@ -35,7 +35,7 @@ class BidController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GetAuctionWithAsset')
+                    items: new OA\Items(ref: '#/components/schemas/Auction.item')
                 )
             ],
         )
@@ -61,7 +61,7 @@ class BidController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
     )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
@@ -86,14 +86,14 @@ class BidController extends AbstractController
         description: 'Auction to create',
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/PostAuction',
+            ref: '#/components/schemas/Auction.post',
             type: 'object'
         )
     )]
     #[OA\Response(
         response: 201,
         description: 'Created',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
     )]
     public function create(Request $request, AuctionRepository $auctionRepository): Response
     {

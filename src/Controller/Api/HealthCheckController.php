@@ -22,7 +22,7 @@ class HealthCheckController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetHealthCheck')
+        content: new OA\JsonContent(ref: '#/components/schemas/HealthCheck.item')
     )]
     public function ping(): Response
     {

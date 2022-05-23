@@ -11,10 +11,10 @@ nelmio_api_doc:
             - ^/api/v1(?!/(documentation|doc.json)$) # Accepts routes under /api/v1 except /api/v1/documentation & /api/v1/doc.json
     models:
         names:
-            - { alias: GetAuction, type: App\Entity\Auction, groups: [ get-auction ] }
-            - { alias: GetAuctionWithAsset, type: App\Entity\Auction, groups: [ get-auction, get-auction-with-asset ] }
-            - { alias: PostAuction, type: App\Entity\Auction, groups: [ post-auction ] }
-            - { alias: GetAsset, type: App\Entity\Asset, groups: [ get-asset ] }
-            - { alias: GetAssetWithAuctions, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions ] }
-            - { alias: GetHealthCheck, type: App\Model\HealthCheck, groups: [ get-health-check ] }
-            - { alias: GetWallet, type: App\Model\Wallet, groups: [ get-wallet ] }
+            - { alias: Auction.item, type: App\Entity\Auction, groups: [ get-auction ] }
+            - { alias: Auction.list, type: App\Entity\Auction, groups: [ get-auction, get-auction-with-asset ] }
+            - { alias: Auction.post, type: App\Entity\Auction, groups: [ post-auction ] }
+            - { alias: Asset.item, type: App\Entity\Asset, groups: [ get-asset ] }
+            - { alias: Asset.list, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions ] }
+            - { alias: HealthCheck.item, type: App\Model\HealthCheck, groups: [ get-health-check ] }
+            - { alias: Wallet.item, type: App\Model\Wallet, groups: [ get-wallet ] }

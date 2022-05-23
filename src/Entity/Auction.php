@@ -93,7 +93,7 @@ class Auction
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([self::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(
-        ref: '#/components/schemas/GetAsset',
+        ref: '#/components/schemas/Asset.item',
         description: 'Asset related to the auction',
         type: 'object',
     )]

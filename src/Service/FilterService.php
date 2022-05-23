@@ -11,7 +11,7 @@ class FilterService
         $filters = [
             'filters' => [],
             'order_by' => 'id',
-            'order_direction' => 'asc',
+            'order_direction' => 'desc',
             'page_size' => 20,
             'page' => 0,
         ];
@@ -43,7 +43,7 @@ class FilterService
                 $filters['order_by'] => $filters['order_direction']
             ],
             $filters['page_size'],
-            $filters['page'] ? ($filters['page_size'] * $filters['page']) - 1 : [],
+            $filters['page'] ? $filters['page_size'] * ($filters['page'] - 1) : null,
         ];
     }
 }

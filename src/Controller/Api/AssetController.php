@@ -30,7 +30,7 @@ class AssetController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GetAssetWithAuctions')
+                    items: new OA\Items(ref: '#/components/schemas/Asset.list')
                 )
             ],
         )
@@ -56,7 +56,7 @@ class AssetController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAssetWithAuctions')
+        content: new OA\JsonContent(ref: '#/components/schemas/Asset.list')
     )]
     public function show(AssetRepository $assetRepository, string $id): Response
     {

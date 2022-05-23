@@ -47,4 +47,55 @@ class AuctionRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+
+    public function customCount(array $filters): int
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('count (a.id)');
+
+        if (isset($filters['collection'])) {
+            $qb->join('a.asset', 'asset')
+                ->andWhere('asset.tokenAddress = :collection')
+                ->setParameter('collection', $filters['collection']);
+
+            unset($filters['collection']);
+        }
+
+        foreach ($filters as $field => $value) {
+            $qb->andWhere('a.' . $field . ' = :' . $field)
+                ->setParameter($field, $value);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if (isset($filters['collection'])) {
+            $qb->join('a.asset', 'asset')
+                ->andWhere('asset.tokenAddress = :collection')
+                ->setParameter('collection', $filters['collection']);
+
+            unset($filters['collection']);
+        }
+
+        foreach ($filters as $field => $value) {
+            $qb->andWhere('a.' . $field . ' = :' . $field)
+                ->setParameter($field, $value);
+        }
+
+        if (count($order) > 0) {
+            $qb->orderBy('a.' . key($order), $order[key($order)]);
+        }
+
+        $qb->setMaxResults($limit);
+
+        if ($offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

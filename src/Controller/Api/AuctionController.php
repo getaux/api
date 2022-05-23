@@ -106,7 +106,7 @@ class AuctionController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GetAuctionWithAsset')
+                    items: new OA\Items(ref: '#/components/schemas/Auction.item')
                 ),
                 new OA\Property(
                     property: 'totalResults',
@@ -126,9 +126,9 @@ class AuctionController extends AbstractController
         }
 
         list($filters, $order, $limit, $offset) = $filterService->map((array)$form->getData());
-        $totalAuctions = $auctionRepository->count($filters);
 
-        $auctions = $auctionRepository->findBy($filters, $order, $limit, $offset);
+        $totalAuctions = $auctionRepository->customCount($filters);
+        $auctions = $auctionRepository->customFindAll($filters, $order, $limit, $offset);
 
         return $this->json([
             'result' => $auctions,
@@ -147,7 +147,7 @@ class AuctionController extends AbstractController
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
     )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
@@ -172,14 +172,14 @@ class AuctionController extends AbstractController
         description: 'Auction to create',
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/PostAuction',
+            ref: '#/components/schemas/Auction.post',
             type: 'object'
         )
     )]
     #[OA\Response(
         response: Response::HTTP_CREATED,
         description: 'Created',
-        content: new OA\JsonContent(ref: '#/components/schemas/GetAuctionWithAsset')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
     )]
     public function create(
         Request           $request,
