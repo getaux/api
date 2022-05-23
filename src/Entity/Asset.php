@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Utils\TimestampTrait;
 use App\Repository\AssetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use OpenApi\Attributes as OA;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: AssetRepository::class)]
 #[OA\Schema(description: 'Asset linked to auction(s)')]
 class Asset
 {
-    use TimestampTrait;
-
     public const GROUP_GET_ASSET = 'get-asset';
     public const GROUP_GET_ASSET_WITH_AUCTIONS = 'get-asset-with-auctions';
     public const GROUP_GET_ASSETS = 'get-assets';
@@ -31,12 +29,12 @@ class Asset
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Internal Immutable X Token ID', format: 'string')]
+    #[OA\Property(description: 'Internal Immutable X Token ID')]
     private string $internalId;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Address of the ERC721 contract', format: 'string')]
+    #[OA\Property(description: 'Address of the ERC721 contract')]
     private string $tokenAddress;
 
     #[ORM\OneToMany(mappedBy: 'asset', targetEntity: Auction::class)]
@@ -50,13 +48,26 @@ class Asset
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'URL of the image which should be used for this asset', format: 'string')]
+    #[OA\Property(description: 'URL of the image which should be used for this asset')]
     private string $imageUrl;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Name of this asset', format: 'string')]
+    #[OA\Property(description: 'Name of this asset')]
     private string $name;
+
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime_immutable')]
+    #[OA\Property(
+        description: 'Created timestamp of this asset',
+        type: 'string',
+        format: 'datetime',
+    )]
+    protected \DateTimeImmutable $createdAt;
+
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime_immutable')]
+    protected \DateTimeImmutable $updatedAt;
 
     public function __construct()
     {
@@ -142,6 +153,30 @@ class Asset
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

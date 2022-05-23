@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Utils\TimestampTrait;
 use App\Helper\TokenHelper;
 use App\Repository\AuctionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Gedmo\Mapping\Annotation as Gedmo;
 use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: AuctionRepository::class)]
-#[OA\Schema(description: 'Auction linked to an asset')]
+#[OA\Schema(description: 'Auction linked to an asset', required: [
+    'type', 'status', 'transferId', 'quantity', 'decimals', 'tokenType', 'endAt'
+])]
 class Auction
 {
-    use TimestampTrait;
-
     public const STATUS_ACTIVE = 'active';
     public const STATUS_FILLED = 'filled';
     public const STATUS_CANCELLED = 'cancelled';
@@ -51,32 +53,40 @@ class Auction
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Type of the auction', format: 'string', enum: self::TYPES, example: self::TYPE_DUTCH)]
+    #[OA\Property(description: 'Type of the auction', enum: self::TYPES, example: self::TYPE_DUTCH)]
     private string $type;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Status of the auction', format: 'string', enum: self::STATUS)]
-    private string $status;
+    #[OA\Property(description: 'Status of the auction', enum: self::STATUS)]
+    private string $status = self::STATUS_ACTIVE;
 
     #[ORM\Column(type: 'bigint')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION])]
-    #[OA\Property(description: 'IMX transfer ID (asset deposit)', format: 'string', example: 1234567)]
+    #[OA\Property(description: 'IMX transfer ID (asset deposit)', example: 4452442)]
     private string $transferId;
 
     #[ORM\Column(type: 'bigint')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Quantity of this asset (price)', format: 'string', example: 1000000000000000000)]
+    #[OA\Property(description: 'Quantity of this asset (price)', example: 1000000000000000000)]
     private string $quantity;
 
     #[ORM\Column(type: 'integer')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Number of decimals supported by this asset', format: 'int', example: 18)]
+    #[OA\Property(
+        description: 'Number of decimals supported by this asset',
+        format: 'int',
+        example: 18,
+    )]
     private int $decimals;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Currency of the auction', format: 'string', enum: TokenHelper::TOKENS)]
+    #[OA\Property(
+        description: 'Currency of the auction',
+        enum: TokenHelper::TOKENS,
+        example: TokenHelper::TOKENS[0],
+    )]
     private string $tokenType;
 
     #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'auctions')]
@@ -89,10 +99,37 @@ class Auction
     )]
     private ?Asset $asset;
 
+    #[ORM\OneToMany(mappedBy: 'auction', targetEntity: Bid::class, orphanRemoval: true)]
+    private Collection $bids;
+
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[OA\Property(
+        description: 'Created timestamp of this auction',
+        type: 'string',
+        format: 'datetime'
+    )]
+    protected \DateTimeImmutable $createdAt;
+
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime_immutable')]
+    protected \DateTimeImmutable $updatedAt;
+
     #[ORM\Column(type: 'datetime')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'End timestamp of this auction', type: 'string', format: 'date-time')]
+    #[OA\Property(
+        description: 'End timestamp of this auction',
+        type: 'string',
+        format: 'datetime',
+        example: '2030-12-31T23:59:59.999Z',
+    )]
     private ?\DateTimeInterface $endAt;
+
+    public function __construct()
+    {
+        $this->bids = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -191,6 +228,60 @@ class Auction
     public function setEndAt(\DateTimeInterface $endAt = null): self
     {
         $this->endAt = $endAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bid>
+     */
+    public function getBids(): Collection
+    {
+        return $this->bids;
+    }
+
+    public function addBid(Bid $bid): self
+    {
+        if (!$this->bids->contains($bid)) {
+            $this->bids[] = $bid;
+            $bid->setAuction($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBid(Bid $bid): self
+    {
+        if ($this->bids->removeElement($bid)) {
+            // set the owning side to null (unless already changed)
+            if ($bid->getAuction() === $this) {
+                $bid->setAuction(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

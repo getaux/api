@@ -25,4 +25,16 @@ services:
 
     App\Client\ImmutableXClient:
         arguments:
-            - '%env(IMX_API_ENV)%'
+            $env: '%env(IMX_API_ENV)%'
+
+    App\Service\ImmutableService:
+        arguments:
+            $immutableXClient: '@App\Client\ImmutableXClient'
+            $assetRepository: '@App\Repository\AssetRepository'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $escrowWallet: '%env(IMX_ESCROW_WALLET)%'
+
+    App\Model\Wallet:
+        arguments:
+            $publicKey: '%env(IMX_ESCROW_WALLET)%'
+            $network: '%env(IMX_API_ENV)%'

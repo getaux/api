@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Client;
 
-use GuzzleHttp\Client;
+use http\Client\Response;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ImmutableXClient
 {
@@ -17,11 +18,12 @@ class ImmutableXClient
     ];
 
     private string $env = 'dev';
-    private Client $httpClient;
 
-    public function __construct(string $env)
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        string                      $env
+    )
     {
-        $this->httpClient = new Client();
         $this->setEnvironment($env);
     }
 
@@ -47,6 +49,12 @@ class ImmutableXClient
         }
 
         $response = $this->httpClient->request('GET', $endpoint);
-        return (array)json_decode((string)$response->getBody(), true);
+        $content = $response->toArray(false);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new ImmutableXClientException($content['message']);
+        }
+
+        return $content;
     }
 }

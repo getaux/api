@@ -5,3 +5,6 @@ parameters:
             -
                 message: '#Property [a-zA-Z0-9\\_]+::\$id is never written, only read.#'
                 path: src/Entity/*
+            -
+                message: '#Parameter \$examples of class OpenApi\\Attributes\\Parameter constructor expects array#'
+                path: src/Controller/*

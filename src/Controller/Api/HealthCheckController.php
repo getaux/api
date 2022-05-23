@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Model\HealthCheck;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,14 +15,14 @@ class HealthCheckController extends AbstractController
 {
     #[Route('/ping', name: 'api_health_check_ping', methods: ['GET'])]
     #[OA\Get(
-        operationId: 'get-health-check',
+        operationId: HealthCheck::GROUP_GET_HEALTH_CHECK,
         description: 'Get health of the API',
         summary: 'Get health of the API'
     )]
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new Model(type: HealthCheck::class, groups: [HealthCheck::GROUP_GET_HEALTH_CHECK])
+        content: new OA\JsonContent(ref: '#/components/schemas/GetHealthCheck')
     )]
     public function ping(): Response
     {
