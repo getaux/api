@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Auction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -48,10 +49,10 @@ class AuctionRepository extends ServiceEntityRepository
         }
     }
 
-    public function customCount(array $filters): int
+    public function customCount(array $filters): mixed
     {
         $qb = $this->createQueryBuilder('a')
-            ->select('count (a.id)');
+            ->select('count (a.id) as totalResults');
 
         if (isset($filters['collection'])) {
             $qb->join('a.asset', 'asset')
@@ -96,6 +97,6 @@ class AuctionRepository extends ServiceEntityRepository
             $qb->setFirstResult($offset);
         }
 
-        return $qb->getQuery()->getResult();
+        return (array)$qb->getQuery()->getResult();
     }
 }
