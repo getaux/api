@@ -6,7 +6,7 @@ api.controllers:
     resource: ../src/Controller/Api
     type: annotation
     prefix:
-        name: 'api/v1'
+        name: 'v1'
 
 kernel:
     resource: ../src/Kernel.php
