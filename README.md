@@ -3,6 +3,7 @@
 ## Requirements
 
 - PHP >= 8.1
+- PostgreSQL >= 13
 
 ## Install locally
 

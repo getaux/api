@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class AssetFixtures extends Fixture
 {
-    public function __construct(private ImmutableXClient $immutableXClient)
+    public function __construct(private readonly ImmutableXClient $immutableXClient)
     {
         // for fixtures, we only get real data
         $this->immutableXClient->setEnvironment(ImmutableXClient::ENV_PROD);
