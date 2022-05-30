@@ -8,7 +8,7 @@ nelmio_api_doc:
             - url: 'https://%env(SERVER_NAME)%'
     areas: # to filter documented areas
         path_patterns:
-            - ^/api/v1(?!/(documentation|doc.json)$) # Accepts routes under /api/v1 except /api/v1/documentation & /api/v1/doc.json
+            - ^/v1(?!/(documentation|doc.json)$) # Accepts routes under /v1 except /api/documentation & /v1/doc.json
     models:
         names:
             - { alias: Auction.item, type: App\Entity\Auction, groups: [ get-auction ] }
