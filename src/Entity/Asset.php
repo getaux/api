@@ -16,9 +16,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
 #[OA\Schema(description: 'Asset linked to auction(s)')]
 class Asset
 {
-    public const GROUP_GET_ASSET = 'get-asset';
-    public const GROUP_GET_ASSET_WITH_AUCTIONS = 'get-asset-with-auctions';
     public const GROUP_GET_ASSETS = 'get-assets';
+    public const GROUP_GET_ASSET_WITH_AUCTIONS = 'get-asset-with-auctions';
+    public const GROUP_GET_ASSET = 'get-asset';
+    public const GROUP_UPDATE_ASSET = 'update-asset';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

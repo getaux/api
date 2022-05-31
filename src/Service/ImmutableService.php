@@ -30,39 +30,37 @@ class ImmutableService
             throw new \Exception(sprintf('Receiver of transfer %s is invalid', $auction->getTransferId()), 400);
         }
 
-        // then fetch asset data
-        $asset = $this->importAsset(
-            $transfer['token']['data']['token_address'],
-            $transfer['token']['data']['token_id']
-        );
-
-        $auction->setAsset($asset);
-    }
-
-    public function importAsset(string $tokenAddress, string $id): Asset
-    {
-        $assetEntity = $this->assetRepository->findOneBy([
-            'tokenAddress' => $tokenAddress,
-            'internalId' => $id,
+        $asset = $this->assetRepository->findOneBy([
+            'tokenAddress' => $transfer['token']['data']['token_address'],
+            'internalId' => $transfer['token']['data']['token_id'],
         ]);
 
-        if (!$assetEntity instanceof Asset) {
-            $asset = $this->immutableXClient->get(
-                sprintf('v1/assets/%s/%s', $tokenAddress, $id)
-            );
+        // then fetch asset data
+        $assetEntity = $this->updateAsset(
+            $transfer['token']['data']['token_address'],
+            $transfer['token']['data']['token_id'],
+            $asset ?? new Asset()
+        );
 
-            $assetEntity = new Asset;
+        $auction->setAsset($assetEntity);
+        $auction->setOwner($transfer['user']);
+    }
 
-            $assetEntity->setInternalId($asset['id']);
-            $assetEntity->setImageUrl($asset['image_url']);
-            $assetEntity->setName($asset['name']);
-            $assetEntity->setTokenAddress($asset['token_address']);
-            $assetEntity->setInternalId($asset['token_id']);
+    public function updateAsset(string $tokenAddress, string $id, Asset $asset): Asset
+    {
+        $apiAssetResult = $this->immutableXClient->get(
+            sprintf('v1/assets/%s/%s', $tokenAddress, $id)
+        );
 
-            $this->entityManager->persist($assetEntity);
-            $this->entityManager->flush();
-        }
+        $asset->setInternalId($apiAssetResult['id']);
+        $asset->setImageUrl($apiAssetResult['image_url']);
+        $asset->setName($apiAssetResult['name']);
+        $asset->setTokenAddress($apiAssetResult['token_address']);
+        $asset->setInternalId($apiAssetResult['token_id']);
 
-        return $assetEntity;
+        $this->entityManager->persist($asset);
+        $this->entityManager->flush();
+
+        return $asset;
     }
 }

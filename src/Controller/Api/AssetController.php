@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Asset;
 use App\Repository\AssetRepository;
+use App\Service\ImmutableService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -65,6 +66,32 @@ class AssetController extends AbstractController
         if (!$asset) {
             throw new NotFoundHttpException(sprintf('Asset with id %s not found', $id));
         }
+
+        return $this->json($asset, Response::HTTP_OK, [], [
+            'groups' => Asset::GROUP_GET_ASSET_WITH_AUCTIONS
+        ]);
+    }
+
+    #[Route('/{id}', name: 'api_assets_update', methods: 'PUT')]
+    #[OA\Put(
+        operationId: Asset::GROUP_UPDATE_ASSET,
+        description: 'Update metadata of an asset',
+        summary: 'Update metadata of an asset'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'OK',
+        content: new OA\JsonContent(ref: '#/components/schemas/Asset.item')
+    )]
+    public function update(string $id, AssetRepository $assetRepository, ImmutableService $immutableService): Response
+    {
+        $asset = $assetRepository->find((int)$id);
+
+        if (!$asset) {
+            throw new NotFoundHttpException(sprintf('Asset with id %s not found', $id));
+        }
+
+        $immutableService->updateAsset($asset->getTokenAddress(), $asset->getInternalId(), $asset);
 
         return $this->json($asset, Response::HTTP_OK, [], [
             'groups' => Asset::GROUP_GET_ASSET_WITH_AUCTIONS
