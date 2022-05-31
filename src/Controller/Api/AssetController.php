@@ -68,7 +68,7 @@ class AssetController extends AbstractController
         }
 
         return $this->json($asset, Response::HTTP_OK, [], [
-            'groups' => Asset::GROUP_GET_ASSET_WITH_AUCTIONS
+            'groups' => [Asset::GROUP_GET_ASSET, Asset::GROUP_GET_ASSET_WITH_AUCTIONS]
         ]);
     }
 

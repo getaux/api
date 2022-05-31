@@ -24,7 +24,7 @@ class Asset
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::GROUP_GET_ASSET, self::GROUP_GET_ASSET])]
+    #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
     #[OA\Property(description: 'Auction X internal ID of the asset', format: 'int')]
     private int $id;
 
