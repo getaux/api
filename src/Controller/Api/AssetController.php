@@ -87,11 +87,15 @@ class AssetController extends AbstractController
     {
         $asset = $assetRepository->find((int)$id);
 
-        if (!$asset) {
+        if (!$asset instanceof Asset) {
             throw new NotFoundHttpException(sprintf('Asset with id %s not found', $id));
         }
 
-        $immutableService->updateAsset($asset->getTokenAddress(), $asset->getInternalId(), $asset);
+        $immutableService->updateAsset(
+            (string)$asset->getTokenAddress(),
+            (string)$asset->getInternalId(),
+            $asset
+        );
 
         return $this->json($asset, Response::HTTP_OK, [], [
             'groups' => Asset::GROUP_GET_ASSET_WITH_AUCTIONS

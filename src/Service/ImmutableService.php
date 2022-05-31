@@ -46,10 +46,10 @@ class ImmutableService
         $auction->setOwner($transfer['user']);
     }
 
-    public function updateAsset(string $tokenAddress, string $id, Asset $asset): Asset
+    public function updateAsset(string $tokenAddress, string $internalId, Asset $asset): Asset
     {
         $apiAssetResult = $this->immutableXClient->get(
-            sprintf('v1/assets/%s/%s', $tokenAddress, $id)
+            sprintf('v1/assets/%s/%s', $tokenAddress, $internalId)
         );
 
         $asset->setInternalId($apiAssetResult['id']);
