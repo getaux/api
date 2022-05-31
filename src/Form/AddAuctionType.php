@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 
-class AuctionType extends AbstractType
+class AddAuctionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

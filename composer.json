@@ -10,6 +10,7 @@
         "ext-iconv": "*",
         "ext-pgsql": "*",
         "ext-xml": "*",
+        "digitaldonkey/ecverify": "^1.0",
         "doctrine/annotations": "^1.13",
         "doctrine/doctrine-bundle": "^2.6",
         "doctrine/doctrine-migrations-bundle": "^3.2",

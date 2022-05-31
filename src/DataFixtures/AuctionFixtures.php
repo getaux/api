@@ -29,6 +29,7 @@ class AuctionFixtures extends Fixture
 
             $auction->setType(Auction::TYPES[rand(0, count(Auction::TYPES) - 1)]);
             $auction->setStatus(Auction::STATUS[rand(0, count(Auction::STATUS) - 1)]);
+            $auction->setOwner('0xfd3268ce649945293a278c2f0dbd0849faa2d497');
 
             $auction->setTokenType(TokenHelper::TOKENS[rand(0, count(TokenHelper::TOKENS) - 1)]);
 

@@ -48,7 +48,11 @@ class ImmutableXClient
             $endpoint .= ($key === array_key_first($parameters) ? '?' : '&') . $key . '=' . $value;
         }
 
-        $response = $this->httpClient->request('GET', $endpoint);
+        $response = $this->httpClient->request('GET', $endpoint, [
+            'headers' => [
+                'User-Agent' => 'Auction X client'
+            ]
+        ]);
         $content = $response->toArray(false);
 
         if ($response->getStatusCode() !== 200) {

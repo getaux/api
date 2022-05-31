@@ -26,13 +26,19 @@ RUN set -eux; \
 		icu-dev \
 		libzip-dev \
 		zlib-dev \
+		gmp-dev \
+		libxml2-dev \
+		libpq-dev \
 	; \
 	\
 	docker-php-ext-configure zip; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
 		zip \
-	; \
+        gmp \
+        xml \
+        pgsql \
+    ; \
 	pecl install \
 		apcu-${APCU_VERSION} \
 	; \

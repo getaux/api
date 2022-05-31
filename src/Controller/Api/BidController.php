@@ -6,7 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Auction;
 use App\Entity\Bid;
-use App\Form\AuctionType;
+use App\Form\AddAuctionType;
 use App\Helper\ResponseHelper;
 use App\Repository\AuctionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -98,7 +98,7 @@ class BidController extends AbstractController
     public function create(Request $request, AuctionRepository $auctionRepository): Response
     {
         $auction = new Bid();
-        $form = $this->createForm(AuctionType::class, $auction);
+        $form = $this->createForm(AddAuctionType::class, $auction);
 
         $form->submit((array)json_decode((string)$request->getContent(), false));
 

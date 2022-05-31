@@ -43,6 +43,7 @@ class Auction
     public const GROUP_GET_AUCTION = 'get-auction';
     public const GROUP_GET_AUCTION_WITH_ASSET = 'get-auction-with-asset';
     public const GROUP_POST_AUCTION = 'post-auction';
+    public const GROUP_DELETE_AUCTION = 'delete-auction';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -88,6 +89,9 @@ class Auction
         example: TokenHelper::TOKENS[0],
     )]
     private string $tokenType;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $owner;
 
     #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'auctions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -282,6 +286,18 @@ class Auction
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?string
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(string $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

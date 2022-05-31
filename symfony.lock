@@ -2,6 +2,9 @@
     "behat/transliterator": {
         "version": "v1.5.0"
     },
+    "digitaldonkey/ecverify": {
+        "version": "1.0"
+    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {
@@ -98,6 +101,9 @@
     "gedmo/doctrine-extensions": {
         "version": "v3.6.0"
     },
+    "kornrunner/keccak": {
+        "version": "1.1.0"
+    },
     "laminas/laminas-code": {
         "version": "4.5.1"
     },
@@ -143,6 +149,15 @@
     },
     "psr/log": {
         "version": "3.0.0"
+    },
+    "simplito/bigint-wrapper-php": {
+        "version": "1.0.0"
+    },
+    "simplito/bn-php": {
+        "version": "1.1.2"
+    },
+    "simplito/elliptic-php": {
+        "version": "1.0.9"
     },
     "stof/doctrine-extensions-bundle": {
         "version": "1.7",

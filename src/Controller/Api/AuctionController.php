@@ -5,21 +5,27 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Entity\Auction;
-use App\Form\AuctionType;
+use App\Form\AddAuctionType;
+use App\Form\CancelAuctionType;
 use App\Form\Filters\FilterAuctionsType;
+use App\Helper\RequestBodyHelper;
 use App\Helper\ResponseHelper;
 use App\Helper\SortHelper;
 use App\Helper\StringHelper;
 use App\Helper\TokenHelper;
+use App\Model\CancelAuction;
 use App\Repository\AuctionRepository;
 use App\Service\FilterService;
 use App\Service\ImmutableService;
+use App\Service\SignatureService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
 
@@ -188,9 +194,9 @@ class AuctionController extends AbstractController
     ): Response
     {
         $auction = new Auction();
-        $form = $this->createForm(AuctionType::class, $auction);
+        $form = $this->createForm(AddAuctionType::class, $auction);
 
-        $form->submit((array)json_decode((string)$request->getContent(), false));
+        $form->submit(RequestBodyHelper::map($request));
 
         if (!$form->isValid()) {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
@@ -205,6 +211,84 @@ class AuctionController extends AbstractController
         }
 
         $immutableService->checkDeposit($auction);
+        $auctionRepository->add($auction);
+
+        return $this->json($auction, Response::HTTP_OK, [], [
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+        ]);
+    }
+
+    #[Route('/{id}', name: 'api_auctions_delete', methods: 'DELETE')]
+    #[OA\Delete(
+        operationId: Auction::GROUP_DELETE_AUCTION,
+        description: 'Cancel an auction',
+        summary: 'Cancel an auction'
+    )]
+    #[OA\RequestBody(
+        description: 'Auction to cancel',
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'publicKey',
+                    description: 'Public key of the auction\'s creator',
+                ),
+                new OA\Property(
+                    property: 'signature',
+                    description: 'Auction id signed by auction\'s creator',
+                ),
+            ],
+        )
+    )]
+    #[OA\Response(
+        response: Response::HTTP_OK,
+        description: 'OK',
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+    )]
+    public function cancel(
+        string            $id,
+        Request           $request,
+        AuctionRepository $auctionRepository,
+        SignatureService  $signatureService
+    ): Response
+    {
+        $auction = $auctionRepository->findOneBy([
+            'id' => $id,
+            'status' => Auction::STATUS_ACTIVE,
+        ]);
+
+        if (!$auction) {
+            throw new NotFoundHttpException(sprintf('Active auction with id %s not found', $id));
+        }
+
+        $cancelAuction = new CancelAuction();
+
+        $form = $this->createForm(CancelAuctionType::class, $cancelAuction);
+        $form->submit(RequestBodyHelper::map($request));
+
+        if (!$form->isValid()) {
+            throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
+        }
+
+        if (!$signatureService->verifySignature(
+            $id,
+            $cancelAuction->getPublicKey(),
+            $cancelAuction->getSignature(),
+        )) {
+            throw new BadRequestHttpException(sprintf(
+                'Signature mismatch with public key %s',
+                $cancelAuction->getPublicKey()
+            ));
+        }
+
+        if ($auction->getOwner() !== $cancelAuction->getPublicKey()) {
+            throw new UnauthorizedHttpException('', sprintf('Address %s is not the owner of auction %s',
+                $cancelAuction->getPublicKey(),
+                $id,
+            ));
+        }
+
+        $auction->setStatus(Auction::STATUS_CANCELLED);
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
