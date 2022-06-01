@@ -16,8 +16,8 @@ class WalletController extends AbstractController
     #[Route('/wallet', name: 'api_wallet', methods: ['GET'])]
     #[OA\Get(
         operationId: Wallet::GROUP_GET_WALLET,
-        description: 'Get Auction X wallet data',
-        summary: 'Get Auction X wallet data',
+        description: 'Get AuctionX wallet data',
+        summary: 'Get AuctionX wallet data',
     )]
     #[OA\Response(
         response: 200,

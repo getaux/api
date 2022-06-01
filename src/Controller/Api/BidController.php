@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
-use App\Entity\Auction;
 use App\Entity\Bid;
-use App\Form\AddAuctionType;
+use App\Form\AddBidType;
+use App\Form\Filters\FilterAuctionsType;
+use App\Form\Filters\FilterBidsType;
 use App\Helper\ResponseHelper;
-use App\Repository\AuctionRepository;
+use App\Helper\SortHelper;
+use App\Repository\BidRepository;
+use App\Service\FilterService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +28,59 @@ class BidController extends AbstractController
     #[OA\Get(
         operationId: Bid::GROUP_GET_BIDS,
         description: 'Get a list of bids',
-        summary: 'Get a list of bids'
+        summary: 'Get a list of bids',
+        parameters: [
+            new OA\Parameter(
+                name: 'page_size',
+                description: 'Page size of the result',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'page',
+                description: 'Page of the result (for paginate)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'order_by',
+                description: 'Property to sort by',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(enum: FilterAuctionsType::ORDER_FIELDS),
+                ],
+            ),
+            new OA\Parameter(
+                name: 'direction',
+                description: 'Direction to sort (asc/desc)',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(title: 'direction', enum: SortHelper::WAYS),
+                ],
+            ),
+            new OA\Parameter(
+                name: 'status',
+                description: 'Status of these auctions',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(title: 'status', enum: Bid::STATUS),
+                ],
+            ),
+            new OA\Parameter(
+                name: 'auction_id',
+                description: 'AuctionX Internal Auction ID',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(title: 'auction_id', type: 'string'),
+                ],
+            ),
+        ],
     )]
     #[OA\Response(
         response: 200,
@@ -35,20 +90,33 @@ class BidController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Auction.item')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Bid.item'),
+                ),
             ],
-        )
+        ),
     )]
-    public function list(AuctionRepository $auctionRepository): Response
+    public function list(Request $request, FilterService $filterService, BidRepository $bidRepository): Response
     {
-        /** @todo refactor with parameters */
-        $auctions = $auctionRepository->findAll();
+        $form = $this->createForm(FilterBidsType::class);
+        $form->submit($request->query->all());
+
+        if (!$form->isValid()) {
+            throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
+        }
+
+        list($filters, $order, $limit, $offset) = $filterService->map((array)$form->getData());
+
+        $totalAuctions = $bidRepository->customCount($filters);
+        $bids = $bidRepository->customFindAll($filters, $order, $limit, $offset);
 
         return $this->json([
-            'result' => $auctions
+            'result' => $bids,
+            'totalResults' => $totalAuctions,
         ], Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+            'groups' => [
+                Bid::GROUP_GET_BID,
+                Bid::GROUP_GET_BID_WITH_AUCTION,
+            ],
         ]);
     }
 
@@ -56,23 +124,26 @@ class BidController extends AbstractController
     #[OA\Get(
         operationId: Bid::GROUP_GET_BID,
         description: 'Get details of a bid',
-        summary: 'Get details of a bid'
+        summary: 'Get details of a bid',
     )]
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
-    public function show(AuctionRepository $auctionRepository, string $id): Response
+    public function show(BidRepository $bidRepository, string $id): Response
     {
-        $auction = $auctionRepository->find((int)$id);
+        $bid = $bidRepository->find((int)$id);
 
-        if (!$auction) {
-            throw new NotFoundHttpException(sprintf('Auction with id %s not found', $id));
+        if (!$bid) {
+            throw new NotFoundHttpException(sprintf('Bid with id %s not found', $id));
         }
 
-        return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+        return $this->json($bid, Response::HTTP_OK, [], [
+            'groups' => [
+                Bid::GROUP_GET_BID,
+                Bid::GROUP_GET_BID_WITH_AUCTION,
+            ],
         ]);
     }
 
@@ -80,25 +151,38 @@ class BidController extends AbstractController
     #[OA\Post(
         operationId: Bid::GROUP_POST_BID,
         description: 'Create a bid',
-        summary: 'Create a bid'
+        summary: 'Create a bid',
     )]
     #[OA\RequestBody(
-        description: 'Auction to create',
+        description: 'Bid to create',
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/Auction.post',
-            type: 'object'
-        )
+            properties: [
+                new OA\Property(
+                    property: 'transferId',
+                    title: 'transferId',
+                    description: 'IMX transfer ID (bid deposit)',
+                    type: 'string',
+                    example: '4452442',
+                ),
+                new OA\Property(
+                    property: 'auctionId',
+                    description: 'AuctionX internal ID of the auction',
+                    type: 'integer',
+                    example: 1
+                ),
+            ],
+        ),
     )]
     #[OA\Response(
         response: 201,
         description: 'Created',
-        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
-    public function create(Request $request, AuctionRepository $auctionRepository): Response
+    public function create(Request $request, BidRepository $bidRepository): Response
     {
-        $auction = new Bid();
-        $form = $this->createForm(AddAuctionType::class, $auction);
+        $bid = new Bid();
+        $form = $this->createForm(AddBidType::class, $bid);
 
         $form->submit((array)json_decode((string)$request->getContent(), false));
 
@@ -108,8 +192,11 @@ class BidController extends AbstractController
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
 
-        return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+        return $this->json($bid, Response::HTTP_OK, [], [
+            'groups' => [
+                Bid::GROUP_GET_BID,
+                Bid::GROUP_GET_BID_WITH_AUCTION,
+            ]
         ]);
     }
 }

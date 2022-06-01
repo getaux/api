@@ -42,23 +42,24 @@ class Auction
     public const GROUP_GET_AUCTIONS = 'get-auctions';
     public const GROUP_GET_AUCTION = 'get-auction';
     public const GROUP_GET_AUCTION_WITH_ASSET = 'get-auction-with-asset';
+    public const GROUP_GET_AUCTION_WITH_BIDS = 'get-auction-with-bids';
     public const GROUP_POST_AUCTION = 'post-auction';
     public const GROUP_DELETE_AUCTION = 'delete-auction';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Auction X internal ID of the auction', format: 'int')]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
+    #[OA\Property(description: 'AuctionX internal ID of the auction', format: 'int')]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(description: 'Type of the auction', enum: self::TYPES, example: self::TYPE_DUTCH)]
     private string $type;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(description: 'Status of the auction', enum: self::STATUS)]
     private string $status = self::STATUS_ACTIVE;
 
@@ -68,12 +69,12 @@ class Auction
     private string $transferId;
 
     #[ORM\Column(type: 'bigint')]
-    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(description: 'Quantity of this asset (price)', example: 1000000000000000000)]
     private string $quantity;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(
         description: 'Number of decimals supported by this asset',
         format: 'int',
@@ -82,7 +83,7 @@ class Auction
     private int $decimals;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(
         description: 'Currency of the auction',
         enum: TokenHelper::TOKENS,
@@ -91,28 +92,36 @@ class Auction
     private string $tokenType;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
+    #[OA\Property(description: 'Address of the seller', example: '0xfd3268ce649945293a278c2f0dbd0849faa2d497')]
     private string $owner;
 
     #[ORM\ManyToOne(targetEntity: Asset::class, inversedBy: 'auctions')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([self::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(
-        ref: '#/components/schemas/Asset.item',
+        ref: '#/components/schemas/Asset.list',
         description: 'Asset related to the auction',
         type: 'object',
     )]
     private ?Asset $asset;
 
     #[ORM\OneToMany(mappedBy: 'auction', targetEntity: Bid::class, orphanRemoval: true)]
+    #[Groups([self::GROUP_GET_AUCTION_WITH_BIDS])]
+    #[OA\Property(
+        description: 'Bids related to the auction',
+        type: 'array',
+        items: new OA\Items(ref: '#/components/schemas/Bid.list')
+    )]
     private Collection $bids;
 
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(
         description: 'Created timestamp of this auction',
         type: 'string',
-        format: 'datetime'
+        format: 'datetime',
     )]
     protected \DateTimeImmutable $createdAt;
 
@@ -121,7 +130,7 @@ class Auction
     protected \DateTimeImmutable $updatedAt;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET])]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(
         description: 'End timestamp of this auction',
         type: 'string',

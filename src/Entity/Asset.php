@@ -25,7 +25,7 @@ class Asset
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Auction X internal ID of the asset', format: 'int')]
+    #[OA\Property(description: 'AuctionX internal ID of the asset', format: 'int')]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -43,7 +43,7 @@ class Asset
     #[OA\Property(
         description: 'Auctions related to the asset',
         type: 'array',
-        items: new OA\Items(ref: '#/components/schemas/Auction.item')
+        items: new OA\Items(ref: '#/components/schemas/Auction.list')
     )]
     private Collection $auctions;
 

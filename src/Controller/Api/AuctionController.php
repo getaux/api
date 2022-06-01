@@ -140,7 +140,11 @@ class AuctionController extends AbstractController
             'result' => $auctions,
             'totalResults' => $totalAuctions,
         ], Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
+            'groups' => [
+                Auction::GROUP_GET_AUCTION,
+                Auction::GROUP_GET_AUCTION_WITH_ASSET,
+                Auction::GROUP_GET_AUCTION_WITH_BIDS,
+            ],
         ]);
     }
 
@@ -164,7 +168,11 @@ class AuctionController extends AbstractController
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
+            'groups' => [
+                Auction::GROUP_GET_AUCTION,
+                Auction::GROUP_GET_AUCTION_WITH_ASSET,
+                Auction::GROUP_GET_AUCTION_WITH_BIDS,
+            ],
         ]);
     }
 
@@ -214,7 +222,11 @@ class AuctionController extends AbstractController
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
+            'groups' => [
+                Auction::GROUP_GET_AUCTION,
+                Auction::GROUP_GET_AUCTION_WITH_ASSET,
+                Auction::GROUP_GET_AUCTION_WITH_BIDS,
+            ],
         ]);
     }
 
@@ -292,7 +304,11 @@ class AuctionController extends AbstractController
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
+            'groups' => [
+                Auction::GROUP_GET_AUCTION,
+                Auction::GROUP_GET_AUCTION_WITH_ASSET,
+                Auction::GROUP_GET_AUCTION_WITH_BIDS,
+            ],
         ]);
     }
 }

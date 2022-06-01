@@ -78,7 +78,7 @@ class AssetController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Asset.list'),
+                    items: new OA\Items(ref: '#/components/schemas/Asset.item'),
                 ),
                 new OA\Property(
                     property: 'totalResults',
@@ -106,7 +106,10 @@ class AssetController extends AbstractController
             'result' => $assets,
             'totalResults' => $totalAssets,
         ], Response::HTTP_OK, [], [
-            'groups' => [Asset::GROUP_GET_ASSET, Asset::GROUP_GET_ASSET_WITH_AUCTIONS],
+            'groups' => [
+                Asset::GROUP_GET_ASSET,
+                Asset::GROUP_GET_ASSET_WITH_AUCTIONS,
+            ],
         ]);
     }
 
@@ -119,7 +122,7 @@ class AssetController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/Asset.list'),
+        content: new OA\JsonContent(ref: '#/components/schemas/Asset.item'),
     )]
     public function show(AssetRepository $assetRepository, string $id): Response
     {
@@ -130,7 +133,10 @@ class AssetController extends AbstractController
         }
 
         return $this->json($asset, Response::HTTP_OK, [], [
-            'groups' => [Asset::GROUP_GET_ASSET, Asset::GROUP_GET_ASSET_WITH_AUCTIONS],
+            'groups' => [
+                Asset::GROUP_GET_ASSET,
+                Asset::GROUP_GET_ASSET_WITH_AUCTIONS,
+            ],
         ]);
     }
 
@@ -160,7 +166,10 @@ class AssetController extends AbstractController
         );
 
         return $this->json($asset, Response::HTTP_OK, [], [
-            'groups' => [Asset::GROUP_GET_ASSET, Asset::GROUP_GET_ASSET_WITH_AUCTIONS],
+            'groups' => [
+                Asset::GROUP_GET_ASSET,
+                Asset::GROUP_GET_ASSET_WITH_AUCTIONS,
+            ],
         ]);
     }
 }

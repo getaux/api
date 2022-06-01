@@ -7,7 +7,7 @@ namespace App\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[OA\Schema(description: 'Official wallet of Auction X engine')]
+#[OA\Schema(description: 'Official wallet of AuctionX engine')]
 class Wallet
 {
     public const GROUP_GET_WALLET = 'get-wallet';

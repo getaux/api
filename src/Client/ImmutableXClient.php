@@ -50,7 +50,7 @@ class ImmutableXClient
 
         $response = $this->httpClient->request('GET', $endpoint, [
             'headers' => [
-                'User-Agent' => 'Auction X client'
+                'User-Agent' => 'AuctionX client'
             ]
         ]);
         $content = $response->toArray(false);

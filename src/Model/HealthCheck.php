@@ -7,7 +7,7 @@ namespace App\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[OA\Schema(description: 'Health check of Auction X engine')]
+#[OA\Schema(description: 'Health check of AuctionX engine')]
 class HealthCheck
 {
     public const GROUP_GET_HEALTH_CHECK = 'get-health-check';

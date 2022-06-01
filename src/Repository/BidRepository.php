@@ -14,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Bid[]    findAll()
  * @method Bid[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BidRepository extends ServiceEntityRepository
+class BidRepository extends ServiceEntityRepository implements FilterableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -39,28 +39,40 @@ class BidRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Bid[] Returns an array of Bid objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function customCount(array $filters): mixed
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select('count (b.id) as totalResults');
 
-//    public function findOneBySomeField($value): ?Bid
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if (isset($filters['auction_id'])) {
+            $qb->join('b.auction', 'a')
+                ->andWhere('a.id = :auctionId')
+                ->setParameter('auctionId', $filters['auction_id']);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        if (isset($filters['auction_id'])) {
+            $qb->join('b.auction', 'a')
+                ->andWhere('a.id = :auctionId')
+                ->setParameter('auctionId', $filters['auction_id']);
+        }
+
+        if (count($order) > 0) {
+            $qb->orderBy('b.' . key($order), $order[key($order)]);
+        }
+
+        $qb->setMaxResults($limit);
+
+        if ($offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        return (array)$qb->getQuery()->getResult();
+    }
 }

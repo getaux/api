@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Auction X API
-            description: Auction X brings auctions to the Immutable X ecosystem.
+            title: AuctionX API
+            description: AuctionX brings auctions to the Immutable X ecosystem.
             version: 1.0.0
         servers:
             - url: 'https://%env(SERVER_NAME)%'
@@ -11,10 +11,16 @@ nelmio_api_doc:
             - ^/v1(?!/(docs|docs.json)$) # Accepts routes under /v1 except /api/documentation & /v1/doc.json
     models:
         names:
-            - { alias: Auction.item, type: App\Entity\Auction, groups: [ get-auction ] }
-            - { alias: Auction.list, type: App\Entity\Auction, groups: [ get-auction, get-auction-with-asset ] }
+            # Auctions
+            - { alias: Auction.item, type: App\Entity\Auction, groups: [ get-auction, get-auction-with-asset, get-auction-with-bids ] }
+            - { alias: Auction.list, type: App\Entity\Auction, groups: [ get-auction ] }
             - { alias: Auction.post, type: App\Entity\Auction, groups: [ post-auction ] }
-            - { alias: Asset.item, type: App\Entity\Asset, groups: [ get-asset ] }
-            - { alias: Asset.list, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions ] }
+            # Assets
+            - { alias: Asset.item, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions ] }
+            - { alias: Asset.list, type: App\Entity\Asset, groups: [ get-asset ] }
+            # Bids
+            - { alias: Bid.item, type: App\Entity\Bid, groups: [ get-bid, get-bid-with-auction ] }
+            - { alias: Bid.list, type: App\Entity\Bid, groups: [ get-bid ] }
+            # Miscellaneous
             - { alias: HealthCheck.item, type: App\Model\HealthCheck, groups: [ get-health-check ] }
             - { alias: Wallet.item, type: App\Model\Wallet, groups: [ get-wallet ] }

@@ -8,9 +8,13 @@ use App\Repository\BidRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OpenApi\Attributes as OA;
+use phpDocumentor\Reflection\Types\Integer;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BidRepository::class)]
-#[OA\Schema(description: 'Bids linked to an asset')]
+#[OA\Schema(description: 'Bids linked to an asset', required: [
+    'transferId', 'quantity', 'decimals', 'tokenType'
+])]
 class Bid
 {
     public const STATUS_ACTIVE = 'active';
@@ -28,27 +32,63 @@ class Bid
     public const GROUP_GET_BIDS = 'get-bids';
     public const GROUP_GET_BID = 'get-bid';
     public const GROUP_POST_BID = 'post-bid';
+    public const GROUP_GET_BID_WITH_AUCTION = 'get-bid-with-auction';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(description: 'AuctionX internal ID of the bid', format: 'int')]
     private int $id;
 
     #[ORM\ManyToOne(targetEntity: Auction::class, inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::GROUP_GET_BID_WITH_AUCTION])]
+    #[OA\Property(
+        ref: '#/components/schemas/Auction.list',
+        description: 'Auction related to the bid',
+        type: 'object',
+    )]
     private ?Auction $auction;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(description: 'Status of the bid', enum: self::STATUS)]
     private string $status = self::STATUS_ACTIVE;
 
     #[ORM\Column(type: 'bigint')]
+    #[Groups([self::GROUP_GET_BID])]
+    #[OA\Property(description: 'IMX transfer ID (bid deposit)', example: 4452442)]
     private string $transferId;
 
     #[ORM\Column(type: 'bigint')]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(description: 'Quantity of this bid (price)', example: 1000000000000000000)]
     private string $quantity;
+
+    #[ORM\Column(type: 'integer')]
+    #[Groups([self::GROUP_GET_BID, Asset::GROUP_GET_ASSET])]
+    #[OA\Property(
+        description: 'Number of decimals supported by this bid',
+        format: 'int',
+        example: 18,
+    )]
+    private int $decimals;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(description: 'Address of the bidder', example: '0xfd3268ce649945293a278c2f0dbd0849faa2d497')]
+    private string $owner;
 
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(
+        description: 'Created timestamp of this id',
+        type: 'string',
+        format: 'datetime',
+        example: '2030-12-31T23:59:59.999Z',
+    )]
     protected \DateTimeImmutable $createdAt;
 
     #[Gedmo\Timestampable(on: 'update')]
@@ -108,6 +148,18 @@ class Bid
         return $this;
     }
 
+    public function getDecimals(): ?int
+    {
+        return $this->decimals;
+    }
+
+    public function setDecimals(int $decimals): self
+    {
+        $this->decimals = $decimals;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -128,6 +180,18 @@ class Bid
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?string
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(string $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

@@ -30,10 +30,10 @@ abstract class AbstractFilterType extends AbstractType
             'constraints' => [
                 new Range([
                     'min' => 1,
-                    'notInRangeMessage' => 'Invalid parameter: page_size field must be between 1 to 100',
+                    'notInRangeMessage' => 'Invalid parameter: page field must be between 1 to 100',
                 ]),
             ],
-            'invalid_message' => 'Invalid parameter: page_size field must be between 1 to 100',
+            'invalid_message' => 'Invalid parameter: page field must be between 1 to 100',
         ])->add('order_by', TextType::class, [
             'constraints' => [
                 new Choice([], $orderFields, null, null, null, null, null, 'Invalid parameter: order_by field is invalid'),
