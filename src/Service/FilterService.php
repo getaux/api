@@ -40,7 +40,7 @@ class FilterService
         return [
             $filters['filters'],
             [
-                $filters['order_by'] => $filters['order_direction']
+                $filters['order_by'] => $filters['order_direction'],
             ],
             $filters['page_size'],
             $filters['page'] ? $filters['page_size'] * ($filters['page'] - 1) : null,

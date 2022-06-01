@@ -56,7 +56,10 @@ class ImmutableXClient
         $content = $response->toArray(false);
 
         if ($response->getStatusCode() !== 200) {
-            throw new ImmutableXClientException($content['message']);
+            throw new ImmutableXClientException(
+                sprintf('IMX API Error: %s', $content['message']),
+                $response->getStatusCode()
+            );
         }
 
         return $content;

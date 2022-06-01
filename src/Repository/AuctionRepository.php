@@ -18,7 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Auction[]    findAll()
  * @method Auction[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AuctionRepository extends ServiceEntityRepository
+class AuctionRepository extends ServiceEntityRepository implements FilterableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

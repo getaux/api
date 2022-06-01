@@ -17,12 +17,12 @@ class HealthCheckController extends AbstractController
     #[OA\Get(
         operationId: HealthCheck::GROUP_GET_HEALTH_CHECK,
         description: 'Get health of the API',
-        summary: 'Get health of the API'
+        summary: 'Get health of the API',
     )]
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/HealthCheck.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/HealthCheck.item'),
     )]
     public function ping(): Response
     {

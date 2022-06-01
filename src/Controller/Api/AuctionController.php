@@ -44,23 +44,23 @@ class AuctionController extends AbstractController
                 description: 'Page size of the result',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'page',
                 description: 'Page of the result (for paginate)',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer')
-            )
-            , new OA\Parameter(
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
                 name: 'order_by',
                 description: 'Property to sort by',
                 in: 'query',
                 required: false,
                 examples: [
                     new OA\Schema(enum: FilterAuctionsType::ORDER_FIELDS),
-                ]
+                ],
             ),
             new OA\Parameter(name: 'direction',
                 description: 'Direction to sort (asc/desc)',
@@ -68,7 +68,7 @@ class AuctionController extends AbstractController
                 required: false,
                 examples: [
                     new OA\Schema(title: 'direction', enum: SortHelper::WAYS),
-                ]
+                ],
             ),
             new OA\Parameter(name: 'type',
                 description: 'Type of these auctions',
@@ -76,7 +76,7 @@ class AuctionController extends AbstractController
                 required: false,
                 examples: [
                     new OA\Schema(title: 'type', enum: Auction::TYPES),
-                ]
+                ],
             ),
             new OA\Parameter(name: 'status',
                 description: 'Status of these auctions',
@@ -84,7 +84,7 @@ class AuctionController extends AbstractController
                 required: false,
                 examples: [
                     new OA\Schema(title: 'status', enum: Auction::STATUS),
-                ]
+                ],
             ),
             new OA\Parameter(name: 'tokenType',
                 description: 'Token type of the asset these auctions',
@@ -92,7 +92,7 @@ class AuctionController extends AbstractController
                 required: false,
                 examples: [
                     new OA\Schema(title: 'tokenType', enum: TokenHelper::TOKENS),
-                ]
+                ],
             ),
             new OA\Parameter(name: 'collection',
                 description: 'Collection contract address',
@@ -100,9 +100,9 @@ class AuctionController extends AbstractController
                 required: false,
                 examples: [
                     new OA\Schema(title: 'collection', type: 'string'),
-                ]
-            )
-        ]
+                ],
+            ),
+        ],
     )]
     #[OA\Response(
         response: Response::HTTP_OK,
@@ -112,15 +112,15 @@ class AuctionController extends AbstractController
                 new OA\Property(
                     property: 'result',
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Auction.item')
+                    items: new OA\Items(ref: '#/components/schemas/Auction.item'),
                 ),
                 new OA\Property(
                     property: 'totalResults',
                     description: 'Total results of the query filtered',
-                    type: 'integer'
-                )
+                    type: 'integer',
+                ),
             ],
-        )
+        ),
     )]
     public function list(Request $request, FilterService $filterService, AuctionRepository $auctionRepository): Response
     {
@@ -140,7 +140,7 @@ class AuctionController extends AbstractController
             'result' => $auctions,
             'totalResults' => $totalAuctions,
         ], Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
         ]);
     }
 
@@ -148,12 +148,12 @@ class AuctionController extends AbstractController
     #[OA\Get(
         operationId: Auction::GROUP_GET_AUCTION,
         description: 'Get details of an auction',
-        summary: 'Get details of an auction'
+        summary: 'Get details of an auction',
     )]
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item'),
     )]
     public function show(AuctionRepository $auctionRepository, string $id): Response
     {
@@ -164,7 +164,7 @@ class AuctionController extends AbstractController
         }
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
         ]);
     }
 
@@ -172,20 +172,20 @@ class AuctionController extends AbstractController
     #[OA\Post(
         operationId: Auction::GROUP_POST_AUCTION,
         description: 'Create an auction',
-        summary: 'Create an auction'
+        summary: 'Create an auction',
     )]
     #[OA\RequestBody(
         description: 'Auction to create',
         required: true,
         content: new OA\JsonContent(
             ref: '#/components/schemas/Auction.post',
-            type: 'object'
-        )
+            type: 'object',
+        ),
     )]
     #[OA\Response(
         response: Response::HTTP_CREATED,
         description: 'Created',
-        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item'),
     )]
     public function create(
         Request           $request,
@@ -214,7 +214,7 @@ class AuctionController extends AbstractController
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
         ]);
     }
 
@@ -222,7 +222,7 @@ class AuctionController extends AbstractController
     #[OA\Delete(
         operationId: Auction::GROUP_DELETE_AUCTION,
         description: 'Cancel an auction',
-        summary: 'Cancel an auction'
+        summary: 'Cancel an auction',
     )]
     #[OA\RequestBody(
         description: 'Auction to cancel',
@@ -238,12 +238,12 @@ class AuctionController extends AbstractController
                     description: 'Auction id signed by auction\'s creator',
                 ),
             ],
-        )
+        ),
     )]
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'OK',
-        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item')
+        content: new OA\JsonContent(ref: '#/components/schemas/Auction.item'),
     )]
     public function cancel(
         string            $id,
@@ -277,7 +277,7 @@ class AuctionController extends AbstractController
         )) {
             throw new BadRequestHttpException(sprintf(
                 'Signature mismatch with public key %s',
-                $cancelAuction->getPublicKey()
+                $cancelAuction->getPublicKey(),
             ));
         }
 
@@ -292,7 +292,7 @@ class AuctionController extends AbstractController
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
-            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET]
+            'groups' => [Auction::GROUP_GET_AUCTION, Auction::GROUP_GET_AUCTION_WITH_ASSET],
         ]);
     }
 }

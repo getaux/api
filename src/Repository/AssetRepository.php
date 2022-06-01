@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Asset[]    findAll()
  * @method Asset[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AssetRepository extends ServiceEntityRepository
+class AssetRepository extends ServiceEntityRepository implements FilterableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -45,5 +45,40 @@ class AssetRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function customCount(array $filters): mixed
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('count (a.id) as totalResults');
+
+        if (isset($filters['collection'])) {
+            $qb->andWhere('a.tokenAddress = :collection')
+                ->setParameter('collection', $filters['collection']);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if (isset($filters['collection'])) {
+            $qb->andWhere('a.tokenAddress = :collection')
+                ->setParameter('collection', $filters['collection']);
+        }
+
+        if (count($order) > 0) {
+            $qb->orderBy('a.' . key($order), $order[key($order)]);
+        }
+
+        $qb->setMaxResults($limit);
+
+        if ($offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        return (array)$qb->getQuery()->getResult();
     }
 }

@@ -22,7 +22,7 @@ class WalletController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'OK',
-        content:  new OA\JsonContent(ref: '#/components/schemas/Wallet.item')
+        content:  new OA\JsonContent(ref: '#/components/schemas/Wallet.item'),
     )]
     public function ping(Wallet $wallet): Response
     {
