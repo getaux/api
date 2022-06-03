@@ -156,7 +156,7 @@ class AuctionController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_auctions_show', methods: 'GET')]
+    #[Route('/{id}', name: 'api_auctions_show', requirements: ['id' => '\d+'], methods: 'GET')]
     #[OA\Get(
         operationId: Auction::GROUP_GET_AUCTION,
         description: 'Get details of an auction',
@@ -238,7 +238,7 @@ class AuctionController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_auctions_delete', methods: 'DELETE')]
+    #[Route('/{id}', name: 'api_auctions_delete', requirements: ['id' => '\d+'], methods: 'DELETE')]
     #[OA\Delete(
         operationId: Auction::GROUP_DELETE_AUCTION,
         description: 'Cancel an auction',
@@ -267,7 +267,7 @@ class AuctionController extends AbstractController
         content: new OA\JsonContent(ref: '#/components/schemas/Auction.item'),
     )]
     public function cancel(
-        string            $id,
+        int               $id,
         Request           $request,
         AuctionRepository $auctionRepository,
         SignatureService  $signatureService
@@ -292,7 +292,7 @@ class AuctionController extends AbstractController
         }
 
         if (!$signatureService->verifySignature(
-            $id,
+            (string)$id,
             $cancelAuction->getPublicKey(),
             $cancelAuction->getSignature(),
         )) {

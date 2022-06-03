@@ -139,7 +139,7 @@ class BidController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_bids_show', methods: 'GET')]
+    #[Route('/{id}', name: 'api_bids_show', requirements: ['id' => '\d+'], methods: 'GET')]
     #[OA\Get(
         operationId: Bid::GROUP_GET_BID,
         description: 'Get details of a bid',
@@ -150,9 +150,9 @@ class BidController extends AbstractController
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
-    public function show(BidRepository $bidRepository, string $id): Response
+    public function show(BidRepository $bidRepository, int $id): Response
     {
-        $bid = $bidRepository->find((int)$id);
+        $bid = $bidRepository->find($id);
 
         if (!$bid) {
             throw new NotFoundHttpException(sprintf('Bid with id %s not found', $id));
@@ -246,7 +246,7 @@ class BidController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_bids_delete', methods: 'DELETE')]
+    #[Route('/{id}', name: 'api_bids_delete', requirements: ['id' => '\d+'], methods: 'DELETE')]
     #[OA\Delete(
         operationId: Bid::GROUP_DELETE_BID,
         description: 'Cancel a bid',
@@ -275,7 +275,7 @@ class BidController extends AbstractController
         content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
     public function cancel(
-        string           $id,
+        int              $id,
         Request          $request,
         BidRepository    $bidRepository,
         SignatureService $signatureService
@@ -300,7 +300,7 @@ class BidController extends AbstractController
         }
 
         if (!$signatureService->verifySignature(
-            $id,
+            (string)$id,
             $cancelBid->getPublicKey(),
             $cancelBid->getSignature(),
         )) {

@@ -113,7 +113,7 @@ class AssetController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_assets_show', methods: 'GET')]
+    #[Route('/{id}', name: 'api_assets_show', requirements: ['id' => '\d+'], methods: 'GET')]
     #[OA\Get(
         operationId: Asset::GROUP_GET_ASSET,
         description: 'Get details of an asset',
@@ -124,9 +124,9 @@ class AssetController extends AbstractController
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Asset.item'),
     )]
-    public function show(AssetRepository $assetRepository, string $id): Response
+    public function show(AssetRepository $assetRepository, int $id): Response
     {
-        $asset = $assetRepository->find((int)$id);
+        $asset = $assetRepository->find($id);
 
         if (!$asset) {
             throw new NotFoundHttpException(sprintf('Asset with id %s not found', $id));
@@ -140,7 +140,7 @@ class AssetController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'api_assets_update', methods: 'PUT')]
+    #[Route('/{id}', name: 'api_assets_update', requirements: ['id' => '\d+'], methods: 'PUT')]
     #[OA\Put(
         operationId: Asset::GROUP_UPDATE_ASSET,
         description: 'Update metadata of an asset',
@@ -151,9 +151,9 @@ class AssetController extends AbstractController
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Asset.item'),
     )]
-    public function update(string $id, AssetRepository $assetRepository, ImmutableService $immutableService): Response
+    public function update(int $id, AssetRepository $assetRepository, ImmutableService $immutableService): Response
     {
-        $asset = $assetRepository->find((int)$id);
+        $asset = $assetRepository->find($id);
 
         if (!$asset instanceof Asset) {
             throw new NotFoundHttpException(sprintf('Asset with id %s not found', $id));
