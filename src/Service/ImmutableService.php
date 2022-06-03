@@ -7,21 +7,27 @@ namespace App\Service;
 use App\Client\ImmutableXClient;
 use App\Entity\Asset;
 use App\Entity\Auction;
+use App\Entity\Bid;
+use App\Helper\ResponseHelper;
+use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
+use App\Repository\BidRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class ImmutableService
 {
     public function __construct(
         private readonly ImmutableXClient       $immutableXClient,
         private readonly AssetRepository        $assetRepository,
+        private readonly BidRepository          $bidRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet
     )
     {
     }
 
-    public function checkDeposit(Auction $auction): void
+    public function checkAuctionDeposit(Auction $auction): void
     {
         $transfer = $this->immutableXClient->get(sprintf('v1/transfers/%s', $auction->getTransferId()));
 
@@ -62,5 +68,30 @@ class ImmutableService
         $this->entityManager->flush();
 
         return $asset;
+    }
+
+    public function checkBidDeposit(Bid $bid, Auction $auction): void
+    {
+        $transfer = $this->immutableXClient->get(sprintf('v1/transfers/%s', $bid->getTransferId()));
+
+        // check if receiver is the escrow wallet
+        if (strtolower($transfer['receiver']) !== strtolower($this->escrowWallet)) {
+            throw new \Exception(sprintf('Receiver of transfer %s is invalid', $bid->getTransferId()), 400);
+        }
+
+        // check if bid currency is the same as auction
+        $token = TokenHelper::getTokenFromIMXTransfer($transfer);
+
+        if ($token !== $auction->getTokenType()) {
+            throw new BadRequestException(
+                sprintf('Invalid bid currency: %s sent, %s excepted', $token, $auction->getTokenType())
+            );
+        }
+
+        $bid->setQuantity($transfer['token']['data']['quantity']);
+        $bid->setDecimals($transfer['token']['data']['decimals']);
+
+        $bid->setOwner($transfer['user']);
+        $bid->setCreatedAt(new \DateTimeImmutable($transfer['timestamp']));
     }
 }

@@ -33,6 +33,7 @@ class Bid
     public const GROUP_GET_BID = 'get-bid';
     public const GROUP_POST_BID = 'post-bid';
     public const GROUP_GET_BID_WITH_AUCTION = 'get-bid-with-auction';
+    public const GROUP_DELETE_BID = 'delete-bid';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -218,7 +218,7 @@ class AuctionController extends AbstractController
             throw new ConflictHttpException('Auction already exists');
         }
 
-        $immutableService->checkDeposit($auction);
+        $immutableService->checkAuctionDeposit($auction);
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
@@ -269,7 +269,7 @@ class AuctionController extends AbstractController
             'status' => Auction::STATUS_ACTIVE,
         ]);
 
-        if (!$auction) {
+        if (!$auction instanceof Auction) {
             throw new NotFoundHttpException(sprintf('Active auction with id %s not found', $id));
         }
 
@@ -288,12 +288,12 @@ class AuctionController extends AbstractController
             $cancelAuction->getSignature(),
         )) {
             throw new BadRequestHttpException(sprintf(
-                'Signature mismatch with public key %s',
+                'Signature does not match with public key %s',
                 $cancelAuction->getPublicKey(),
             ));
         }
 
-        if ($auction->getOwner() !== $cancelAuction->getPublicKey()) {
+        if (strtolower($auction->getOwner()) !== strtolower($cancelAuction->getPublicKey())) {
             throw new UnauthorizedHttpException('', sprintf('Address %s is not the owner of auction %s',
                 $cancelAuction->getPublicKey(),
                 $id,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
-class CancelAuction extends AbstractCancelModel
+class CancelBid extends AbstractCancelModel
 {
 
 }

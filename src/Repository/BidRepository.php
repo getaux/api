@@ -21,7 +21,7 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
         parent::__construct($registry, Bid::class);
     }
 
-    public function add(Bid $entity, bool $flush = false): void
+    public function add(Bid $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
         }
     }
 
-    public function remove(Bid $entity, bool $flush = false): void
+    public function remove(Bid $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
 

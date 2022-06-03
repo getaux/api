@@ -4,19 +4,30 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Entity\Auction;
 use App\Entity\Bid;
 use App\Form\AddBidType;
+use App\Form\CancelBidType;
 use App\Form\Filters\FilterAuctionsType;
 use App\Form\Filters\FilterBidsType;
+use App\Helper\RequestBodyHelper;
 use App\Helper\ResponseHelper;
 use App\Helper\SortHelper;
+use App\Helper\StringHelper;
+use App\Model\CancelBid;
+use App\Repository\AuctionRepository;
 use App\Repository\BidRepository;
 use App\Service\FilterService;
+use App\Service\ImmutableService;
+use App\Service\SignatureService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
 
@@ -163,7 +174,7 @@ class BidController extends AbstractController
                     title: 'transferId',
                     description: 'IMX transfer ID (bid deposit)',
                     type: 'string',
-                    example: '4452442',
+                    example: '4667245',
                 ),
                 new OA\Property(
                     property: 'auctionId',
@@ -179,7 +190,12 @@ class BidController extends AbstractController
         description: 'Created',
         content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
-    public function create(Request $request, BidRepository $bidRepository): Response
+    public function create(
+        Request           $request,
+        BidRepository     $bidRepository,
+        AuctionRepository $auctionRepository,
+        ImmutableService  $immutableService
+    ): Response
     {
         $bid = new Bid();
         $form = $this->createForm(AddBidType::class, $bid);
@@ -187,7 +203,29 @@ class BidController extends AbstractController
         $form->submit((array)json_decode((string)$request->getContent(), false));
 
         if ($form->isValid()) {
-            //$auctionRepository->add($auction);
+            $auction = $auctionRepository->findOneBy([
+                'id' => $form->get('auctionId')->getData(),
+                'status' => Auction::STATUS_ACTIVE,
+            ]);
+
+            if ($auction instanceof Auction) {
+                $bid->setAuction($auction);
+            } else {
+                throw new NotFoundHttpException(
+                    sprintf('Active auction with id %s not found', $form->get('auctionId')->getData())
+                );
+            }
+
+            $bidExist = $bidRepository->findOneBy([
+                'transferId' => StringHelper::sanitize((string)$bid->getTransferId())
+            ]);
+
+            if ($bidExist instanceof Bid) {
+                throw new ConflictHttpException(sprintf('Bid with transfer %s already exists', $bid->getTransferId()));
+            }
+
+            $immutableService->checkBidDeposit($bid, $auction);
+            $bidRepository->add($bid);
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
@@ -197,6 +235,87 @@ class BidController extends AbstractController
                 Bid::GROUP_GET_BID,
                 Bid::GROUP_GET_BID_WITH_AUCTION,
             ]
+        ]);
+    }
+
+    #[Route('/{id}', name: 'api_bids_delete', methods: 'DELETE')]
+    #[OA\Delete(
+        operationId: Bid::GROUP_DELETE_BID,
+        description: 'Cancel a bid',
+        summary: 'Cancel a bid',
+    )]
+    #[OA\RequestBody(
+        description: 'Bid to cancel',
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'publicKey',
+                    description: 'Public key of the bid\'s creator',
+                ),
+                new OA\Property(
+                    property: 'signature',
+                    description: 'Bid id signed by bid\'s creator',
+                ),
+            ],
+        ),
+    )]
+    #[OA\Response(
+        response: Response::HTTP_OK,
+        description: 'OK',
+        content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
+    )]
+    public function cancel(
+        string           $id,
+        Request          $request,
+        BidRepository    $bidRepository,
+        SignatureService $signatureService
+    ): Response
+    {
+        $bid = $bidRepository->findOneBy([
+            'id' => $id,
+            'status' => Auction::STATUS_ACTIVE,
+        ]);
+
+        if (!$bid instanceof Bid) {
+            throw new NotFoundHttpException(sprintf('Active bid with id %s not found', $id));
+        }
+
+        $cancelBid = new CancelBid();
+
+        $form = $this->createForm(CancelBidType::class, $cancelBid);
+        $form->submit(RequestBodyHelper::map($request));
+
+        if (!$form->isValid()) {
+            throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
+        }
+
+        if (!$signatureService->verifySignature(
+            $id,
+            $cancelBid->getPublicKey(),
+            $cancelBid->getSignature(),
+        )) {
+            throw new BadRequestHttpException(sprintf(
+                'Signature does not match with public key %s',
+                $cancelBid->getPublicKey(),
+            ));
+        }
+
+        if (strtolower($bid->getOwner()) !== strtolower($cancelBid->getPublicKey())) {
+            throw new UnauthorizedHttpException('', sprintf('Address %s is not the owner of id %s',
+                $cancelBid->getPublicKey(),
+                $id,
+            ));
+        }
+
+        $bid->setStatus(Auction::STATUS_CANCELLED);
+        $bidRepository->add($bid);
+
+        return $this->json($bid, Response::HTTP_OK, [], [
+            'groups' => [
+                Bid::GROUP_GET_BID,
+                Bid::GROUP_GET_BID_WITH_AUCTION,
+            ],
         ]);
     }
 }

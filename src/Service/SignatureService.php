@@ -8,6 +8,9 @@ use Ethereum\EcRecover;
 
 class SignatureService
 {
+    /**
+     * Signature could be tried here: https://app.mycrypto.com/sign-message
+     */
     public function verifySignature(string $message, string $publicKey, string $signature): bool
     {
         $publicKey = strtolower($publicKey);
