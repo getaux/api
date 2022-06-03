@@ -248,6 +248,7 @@ class AuctionController extends AbstractController
         description: 'Auction to cancel',
         required: true,
         content: new OA\JsonContent(
+            required: ['publicKey', 'signature'],
             properties: [
                 new OA\Property(
                     property: 'publicKey',
