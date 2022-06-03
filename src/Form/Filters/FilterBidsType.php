@@ -28,6 +28,6 @@ class FilterBidsType extends AbstractFilterType
             'constraints' => [
                 new Choice([], Bid::STATUS, null, null, null, null, null, 'Invalid parameter: status field is invalid'),
             ],
-        ]);
+        ])->add('owner', TextType::class);
     }
 }

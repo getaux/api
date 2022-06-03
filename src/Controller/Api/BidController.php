@@ -91,6 +91,14 @@ class BidController extends AbstractController
                     new OA\Schema(title: 'auction_id', type: 'string'),
                 ],
             ),
+            new OA\Parameter(name: 'owner',
+                description: 'Auction owner address',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(title: 'owner', type: 'string'),
+                ],
+            ),
         ],
     )]
     #[OA\Response(
@@ -212,7 +220,7 @@ class BidController extends AbstractController
                 $bid->setAuction($auction);
             } else {
                 throw new NotFoundHttpException(
-                    sprintf('Active auction with id %s not found', $form->get('auctionId')->getData())
+                    sprintf('Active auction with id %s not found', strval($form->get('auctionId')->getData()))
                 );
             }
 

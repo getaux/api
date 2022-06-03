@@ -48,6 +48,13 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
             $qb->join('b.auction', 'a')
                 ->andWhere('a.id = :auctionId')
                 ->setParameter('auctionId', $filters['auction_id']);
+
+            unset($filters['auction_id']);
+        }
+
+        foreach ($filters as $field => $value) {
+            $qb->andWhere('b.' . $field . ' = :' . $field)
+                ->setParameter($field, $value);
         }
 
         return $qb->getQuery()->getSingleScalarResult();
@@ -61,10 +68,17 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
             $qb->join('b.auction', 'a')
                 ->andWhere('a.id = :auctionId')
                 ->setParameter('auctionId', $filters['auction_id']);
+
+            unset($filters['auction_id']);
         }
 
         if (count($order) > 0) {
             $qb->orderBy('b.' . key($order), $order[key($order)]);
+        }
+
+        foreach ($filters as $field => $value) {
+            $qb->andWhere('b.' . $field . ' = :' . $field)
+                ->setParameter($field, strtolower($value));
         }
 
         $qb->setMaxResults($limit);

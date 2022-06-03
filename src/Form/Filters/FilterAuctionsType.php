@@ -30,6 +30,6 @@ class FilterAuctionsType extends AbstractFilterType
             'constraints' => [
                 new Choice([], TokenHelper::TOKENS, null, null, null, null, null, 'Invalid parameter: tokenType field is invalid'),
             ],
-        ]);
+        ])->add('owner', TextType::class);
     }
 }

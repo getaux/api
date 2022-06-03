@@ -102,6 +102,14 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'collection', type: 'string'),
                 ],
             ),
+            new OA\Parameter(name: 'owner',
+                description: 'Auction owner address',
+                in: 'query',
+                required: false,
+                examples: [
+                    new OA\Schema(title: 'owner', type: 'string'),
+                ],
+            ),
         ],
     )]
     #[OA\Response(

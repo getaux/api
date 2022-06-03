@@ -8,10 +8,8 @@ use App\Client\ImmutableXClient;
 use App\Entity\Asset;
 use App\Entity\Auction;
 use App\Entity\Bid;
-use App\Helper\ResponseHelper;
 use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
-use App\Repository\BidRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -20,7 +18,6 @@ class ImmutableService
     public function __construct(
         private readonly ImmutableXClient       $immutableXClient,
         private readonly AssetRepository        $assetRepository,
-        private readonly BidRepository          $bidRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet
     )

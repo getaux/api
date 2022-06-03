@@ -299,14 +299,14 @@ class Auction
         return $this;
     }
 
-    public function getOwner(): ?string
+    public function getOwner(): string
     {
         return $this->owner;
     }
 
     public function setOwner(string $owner): self
     {
-        $this->owner = $owner;
+        $this->owner = strtolower($owner);
 
         return $this;
     }
