@@ -3,12 +3,15 @@
 ## Requirements
 
 - PHP >= 8.1
+- Composer >= 2.3
 - PostgreSQL >= 13
 
 ## Install locally
 
 - Install Docker https://docs.docker.com/get-docker/
-- `cp .env .env.local`
+- `git clone git@github.com:getaux/api.git`
+- `composer install`
+- `cp .env .env.local # then edit .env.local file`
 - `docker-compose build --no-cache --pull`
 
 ## Run locally
