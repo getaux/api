@@ -20,7 +20,7 @@ class HealthCheckController extends AbstractController
         summary: 'Get health of the API',
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/HealthCheck.item'),
     )]

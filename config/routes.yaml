@@ -8,6 +8,12 @@ api.controllers:
     prefix:
         name: 'v1'
 
+bus.controllers:
+    resource: ../src/Controller/Bus
+    type: annotation
+    prefix:
+        name: 'v1'
+
 kernel:
     resource: ../src/Kernel.php
     type: annotation

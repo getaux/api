@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Entity\Asset;
 use App\Entity\Auction;
 use App\Form\AddAuctionType;
 use App\Form\CancelAuctionType;
@@ -17,6 +18,7 @@ use App\Model\CancelAuction;
 use App\Repository\AuctionRepository;
 use App\Service\FilterService;
 use App\Service\ImmutableService;
+use App\Service\MessageService;
 use App\Service\SignatureService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -270,7 +272,8 @@ class AuctionController extends AbstractController
         int               $id,
         Request           $request,
         AuctionRepository $auctionRepository,
-        SignatureService  $signatureService
+        SignatureService  $signatureService,
+        MessageService    $messageService
     ): Response
     {
         $auction = $auctionRepository->findOneBy([
@@ -311,6 +314,15 @@ class AuctionController extends AbstractController
 
         $auction->setStatus(Auction::STATUS_CANCELLED);
         $auctionRepository->add($auction);
+
+        // add to queue
+        if ($auction->getAsset() instanceof Asset) {
+            $messageService->transferNFT(
+                $auction->getAsset()->getInternalId(),
+                $auction->getAsset()->getTokenAddress(),
+                $auction->getOwner()
+            );
+        }
 
         return $this->json($auction, Response::HTTP_OK, [], [
             'groups' => [

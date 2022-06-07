@@ -31,12 +31,12 @@ class Asset
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
     #[OA\Property(description: 'Internal Immutable X Token ID')]
-    private string $internalId;
+    private string $internalId = '';
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
     #[OA\Property(description: 'Address of the ERC721 contract')]
-    private string $tokenAddress;
+    private string $tokenAddress = '';
 
     #[ORM\OneToMany(mappedBy: 'asset', targetEntity: Auction::class)]
     #[Groups([self::GROUP_GET_ASSET_WITH_AUCTIONS])]
@@ -80,7 +80,7 @@ class Asset
         return $this->id;
     }
 
-    public function getInternalId(): ?string
+    public function getInternalId(): string
     {
         return $this->internalId;
     }
@@ -92,7 +92,7 @@ class Asset
         return $this;
     }
 
-    public function getTokenAddress(): ?string
+    public function getTokenAddress(): string
     {
         return $this->tokenAddress;
     }

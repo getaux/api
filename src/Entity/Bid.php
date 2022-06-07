@@ -65,7 +65,7 @@ class Bid
     #[ORM\Column(type: 'bigint')]
     #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
     #[OA\Property(description: 'Quantity of this bid (price)', example: 1000000000000000000)]
-    private string $quantity;
+    private string $quantity = '0';
 
     #[ORM\Column(type: 'integer')]
     #[Groups([self::GROUP_GET_BID, Asset::GROUP_GET_ASSET])]
@@ -74,7 +74,7 @@ class Bid
         format: 'int',
         example: 18,
     )]
-    private int $decimals;
+    private int $decimals = 0;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
@@ -137,7 +137,7 @@ class Bid
         return $this;
     }
 
-    public function getQuantity(): ?string
+    public function getQuantity(): string
     {
         return $this->quantity;
     }
@@ -149,7 +149,7 @@ class Bid
         return $this;
     }
 
-    public function getDecimals(): ?int
+    public function getDecimals(): int
     {
         return $this->decimals;
     }

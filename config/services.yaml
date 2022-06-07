@@ -23,6 +23,11 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Controller\Bus\MessageController:
+        arguments:
+            $requestStack: '@request_stack'
+            $apiKey: '%env(BUS_API_KEY)%'
+
     App\Client\ImmutableXClient:
         arguments:
             $env: '%env(IMX_API_ENV)%'

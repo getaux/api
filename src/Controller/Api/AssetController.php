@@ -71,7 +71,7 @@ class AssetController extends AbstractController
         ],
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(
             properties: [
@@ -120,7 +120,7 @@ class AssetController extends AbstractController
         summary: 'Get details of an asset',
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Asset.item'),
     )]
@@ -147,7 +147,7 @@ class AssetController extends AbstractController
         summary: 'Update metadata of an asset',
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Asset.item'),
     )]

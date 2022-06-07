@@ -20,7 +20,7 @@ class WalletController extends AbstractController
         summary: 'Get AuctionX wallet data',
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content:  new OA\JsonContent(ref: '#/components/schemas/Wallet.item'),
     )]

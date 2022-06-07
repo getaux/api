@@ -89,7 +89,7 @@ class Auction
         enum: TokenHelper::TOKENS,
         example: TokenHelper::TOKENS[0],
     )]
-    private string $tokenType;
+    private string $tokenType = '';
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
@@ -209,7 +209,7 @@ class Auction
         return $this;
     }
 
-    public function getTokenType(): ?string
+    public function getTokenType(): string
     {
         return $this->tokenType;
     }

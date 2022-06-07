@@ -19,6 +19,7 @@ use App\Repository\AuctionRepository;
 use App\Repository\BidRepository;
 use App\Service\FilterService;
 use App\Service\ImmutableService;
+use App\Service\MessageService;
 use App\Service\SignatureService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -102,7 +103,7 @@ class BidController extends AbstractController
         ],
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(
             properties: [
@@ -146,7 +147,7 @@ class BidController extends AbstractController
         summary: 'Get details of a bid',
     )]
     #[OA\Response(
-        response: 200,
+        response: Response::HTTP_OK,
         description: 'OK',
         content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
@@ -194,7 +195,7 @@ class BidController extends AbstractController
         ),
     )]
     #[OA\Response(
-        response: 201,
+        response: Response::HTTP_CREATED,
         description: 'Created',
         content: new OA\JsonContent(ref: '#/components/schemas/Bid.item'),
     )]
@@ -278,7 +279,8 @@ class BidController extends AbstractController
         int              $id,
         Request          $request,
         BidRepository    $bidRepository,
-        SignatureService $signatureService
+        SignatureService $signatureService,
+        MessageService   $messageService
     ): Response
     {
         $bid = $bidRepository->findOneBy([
@@ -319,6 +321,16 @@ class BidController extends AbstractController
 
         $bid->setStatus(Auction::STATUS_CANCELLED);
         $bidRepository->add($bid);
+
+        // add to queue
+        if ($bid->getAuction() instanceof Auction) {
+            $messageService->transferCrypto(
+                $bid->getAuction()->getTokenType(),
+                $bid->getQuantity(),
+                $bid->getDecimals(),
+                $bid->getOwner()
+            );
+        }
 
         return $this->json($bid, Response::HTTP_OK, [], [
             'groups' => [
