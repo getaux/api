@@ -319,6 +319,7 @@ class AuctionController extends AbstractController
         if ($auction->getAsset() instanceof Asset) {
             $messageService->transferNFT(
                 $auction->getAsset()->getInternalId(),
+                $auction->getAsset()->getTokenId(),
                 $auction->getAsset()->getTokenAddress(),
                 $auction->getOwner()
             );

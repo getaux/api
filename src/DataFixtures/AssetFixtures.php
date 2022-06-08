@@ -28,7 +28,8 @@ class AssetFixtures extends Fixture
         foreach ($realAssets['result'] as $realAsset) {
             $asset = new Asset;
             $asset->setName($realAsset['name']);
-            $asset->setInternalId($realAsset['token_id']);
+            $asset->setTokenId($realAsset['token_id']);
+            $asset->setInternalId($realAsset['id']);
             $asset->setTokenAddress($realAsset['token_address']);
             $asset->setImageUrl($realAsset['image_url']);
 

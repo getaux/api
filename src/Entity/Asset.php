@@ -30,7 +30,7 @@ class Asset
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Internal Immutable X Token ID')]
+    #[OA\Property(description: 'Internal Immutable X Internal ID')]
     private string $internalId = '';
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -69,6 +69,11 @@ class Asset
     #[Gedmo\Timestampable(on: 'update')]
     #[ORM\Column(type: 'datetime_immutable')]
     protected \DateTimeImmutable $updatedAt;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
+    #[OA\Property(description: 'Internal Immutable X Internal ID')]
+    private string $tokenId = '';
 
     public function __construct()
     {
@@ -178,6 +183,18 @@ class Asset
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getTokenId(): string
+    {
+        return $this->tokenId;
+    }
+
+    public function setTokenId(string $tokenId): self
+    {
+        $this->tokenId = $tokenId;
 
         return $this;
     }

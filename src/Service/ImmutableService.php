@@ -35,7 +35,7 @@ class ImmutableService
 
         $asset = $this->assetRepository->findOneBy([
             'tokenAddress' => $transfer['token']['data']['token_address'],
-            'internalId' => $transfer['token']['data']['token_id'],
+            'tokenId' => $transfer['token']['data']['token_id'],
         ]);
 
         // then fetch asset data
@@ -56,6 +56,7 @@ class ImmutableService
         );
 
         $asset->setInternalId($apiAssetResult['id']);
+        $asset->setTokenId($apiAssetResult['token_id']);
         $asset->setImageUrl($apiAssetResult['image_url']);
         $asset->setName($apiAssetResult['name']);
         $asset->setTokenAddress($apiAssetResult['token_address']);

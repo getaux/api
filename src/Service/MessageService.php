@@ -14,6 +14,7 @@ class MessageService
     }
 
     public function transferNFT(
+        string $internalId,
         string $tokenId,
         string $tokenAddress,
         string $receiverAddress
@@ -23,6 +24,7 @@ class MessageService
             'asset' => [
                 'token_address' => $tokenAddress,
                 'token_id' => $tokenId,
+                'internal_id' => $internalId,
             ],
             'recipient' => $receiverAddress
         ];

@@ -22,6 +22,7 @@ class MessageFixtures extends Fixture
                     'asset' => [
                         'token_address' => '0xb0e827c9ab5e68d243f707f832b756981987f704',
                         'token_id' => '1234',
+                        'internal_id' => '0xffe4415b43487e070d9f952ede764679049eefd83e74b24325d7e37db1b0c67a',
                     ],
                     'recipient' => '0xb8f6577961ff927c70d26ac7b691474e5a8e2927'
                 ];
