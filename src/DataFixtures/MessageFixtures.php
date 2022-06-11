@@ -28,7 +28,7 @@ class MessageFixtures extends Fixture
                 ];
             } else {
                 $body = [
-                    'asset' => [
+                    'token' => [
                         'token_type' => TokenHelper::TOKENS[0],
                         'quantity' => '1000000000000',
                         'decimals' => 18,

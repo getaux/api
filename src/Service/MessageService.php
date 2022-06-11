@@ -48,7 +48,7 @@ class MessageService
             'recipient' => $receiverAddress
         ];
 
-        $this->createMessage(Message::TASK_TRANSFER_CRYPTO, $body);
+        $this->createMessage(Message::TASK_TRANSFER_TOKEN, $body);
     }
 
     private function createMessage(string $task, array $body): void

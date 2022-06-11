@@ -8,7 +8,6 @@ use App\Entity\Message;
 use App\Helper\RequestBodyHelper;
 use App\Repository\MessageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -93,7 +92,7 @@ class MessageController extends AbstractController
         ]);
     }
 
-    #[Route(name: 'api_bus_receive', methods: 'OPTIONS')]
+    #[Route(name: 'api_bus_options', methods: 'OPTIONS')]
     public function options(): Response
     {
         return new Response(null, Response::HTTP_OK, [

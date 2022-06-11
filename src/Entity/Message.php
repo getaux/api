@@ -20,11 +20,11 @@ class Message
         self::STATUS_ERROR,
     ];
 
-    public const TASK_TRANSFER_CRYPTO = 'task-transfer-crypto';
+    public const TASK_TRANSFER_TOKEN = 'task-transfer-token';
     public const TASK_TRANSFER_NFT = 'task-transfer-nft';
 
     public const TASKS = [
-        self::TASK_TRANSFER_CRYPTO,
+        self::TASK_TRANSFER_TOKEN,
         self::TASK_TRANSFER_NFT,
     ];
 
