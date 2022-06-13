@@ -160,8 +160,8 @@ class AssetController extends AbstractController
         }
 
         $immutableService->updateAsset(
-            (string)$asset->getTokenAddress(),
-            (string)$asset->getInternalId(),
+            $asset->getTokenAddress(),
+            $asset->getInternalId(),
             $asset,
         );
 
