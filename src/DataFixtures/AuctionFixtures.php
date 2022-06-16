@@ -35,7 +35,10 @@ class AuctionFixtures extends Fixture
 
             $auction->setTransferId((string)rand(100000000, 999999999));
 
-            $auction->setEndAt(new \DateTime('+1 week'));
+            $dateTime = new \DateTime('+1 week');
+            $dateFormat = $dateTime->format('Y-m-d H:i:00');
+
+            $auction->setEndAt(\DateTime::createFromFormat('Y-m-d H:i:s', $dateFormat));
 
             $manager->persist($auction);
         }

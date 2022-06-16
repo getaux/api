@@ -240,7 +240,9 @@ class Auction
 
     public function setEndAt(\DateTimeInterface $endAt = null): self
     {
-        $this->endAt = $endAt;
+        $dateFormat = $endAt->format('Y-m-d H:i:00');
+
+        $this->endAt = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
 
         return $this;
     }
