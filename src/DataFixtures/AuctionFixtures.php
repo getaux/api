@@ -21,10 +21,9 @@ class AuctionFixtures extends Fixture
             $auction = new Auction;
             $auction->setAsset($asset);
 
-            $minQuantity = pow(10, rand(16, 18));
-            $maxQuantity = $minQuantity * 2;
+            $randQuantity = rand(10, 100);
 
-            $auction->setQuantity((string)rand($minQuantity, $maxQuantity));
+            $auction->setQuantity((string)($randQuantity * pow(10, 16)));
             $auction->setDecimals(18);
 
             $auction->setType(Auction::TYPES[rand(0, count(Auction::TYPES) - 1)]);
