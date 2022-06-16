@@ -312,6 +312,10 @@ class AuctionController extends AbstractController
             ));
         }
 
+        if ($auction->hasActiveBids()) {
+            throw new BadRequestException('You can\'t cancel an auction with at least one active bid');
+        }
+
         $auction->setStatus(Auction::STATUS_CANCELLED);
         $auctionRepository->add($auction);
 

@@ -137,7 +137,7 @@ class Auction
         format: 'datetime',
         example: '2030-12-31T23:59:59.999Z',
     )]
-    private ?\DateTimeInterface $endAt;
+    private \DateTimeInterface $endAt;
 
     public function __construct()
     {
@@ -233,16 +233,19 @@ class Auction
         return $this;
     }
 
-    public function getEndAt(): ?\DateTimeInterface
+    public function getEndAt(): \DateTimeInterface
     {
         return $this->endAt;
     }
 
-    public function setEndAt(\DateTimeInterface $endAt = null): self
+    public function setEndAt(\DateTimeInterface $endAt): self
     {
         $dateFormat = $endAt->format('Y-m-d H:i:00');
+        $dateImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
 
-        $this->endAt = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
+        if ($dateImmutable) {
+            $this->endAt = $dateImmutable;
+        }
 
         return $this;
     }
@@ -311,5 +314,32 @@ class Auction
         $this->owner = strtolower($owner);
 
         return $this;
+    }
+
+    public function hasActiveBids(): bool
+    {
+        foreach ($this->getBids() as $bid) {
+            if ($bid->getStatus() === Bid::STATUS_ACTIVE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getLastActiveBid(): ?Bid
+    {
+        foreach ($this->getBids() as $bid) {
+            if ($bid->getStatus() === Bid::STATUS_ACTIVE) {
+                return $bid;
+            }
+        }
+
+        return null;
+    }
+
+    public function getLastBid(): Bid|false
+    {
+        return $this->getBids()->last();
     }
 }

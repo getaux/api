@@ -6,8 +6,6 @@ namespace App\Repository;
 
 use App\Entity\Auction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -96,6 +94,17 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
         if ($offset) {
             $qb->setFirstResult($offset);
         }
+
+        return (array)$qb->getQuery()->getResult();
+    }
+
+    public function findEndedAuctions(\DateTime $endAt): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.endAt <= :endAt')
+            ->setParameter('endAt', $endAt)
+            ->andWhere('a.status = :status')
+            ->setParameter('status', Auction::STATUS_ACTIVE);
 
         return (array)$qb->getQuery()->getResult();
     }

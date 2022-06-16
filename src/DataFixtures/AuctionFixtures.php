@@ -36,8 +36,11 @@ class AuctionFixtures extends Fixture
 
             $dateTime = new \DateTime('+1 week');
             $dateFormat = $dateTime->format('Y-m-d H:i:00');
+            $dateImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
 
-            $auction->setEndAt(\DateTime::createFromFormat('Y-m-d H:i:s', $dateFormat));
+            if ($dateImmutable) {
+                $auction->setEndAt($dateImmutable);
+            }
 
             $manager->persist($auction);
         }

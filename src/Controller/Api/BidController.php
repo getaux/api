@@ -203,7 +203,8 @@ class BidController extends AbstractController
         Request           $request,
         BidRepository     $bidRepository,
         AuctionRepository $auctionRepository,
-        ImmutableService  $immutableService
+        ImmutableService  $immutableService,
+        MessageService    $messageService
     ): Response
     {
         $bid = new Bid();
@@ -234,6 +235,31 @@ class BidController extends AbstractController
             }
 
             $immutableService->checkBidDeposit($bid, $auction);
+
+            // add 10 more minutes if auction ending in less than 10 minutes
+            if (((new \DateTime())->format('U') - $auction->getEndAt()->format('U')) < 600) {
+                $newEndAt = new \DateTimeImmutable('+ 10 minutes');
+                $auction->setEndAt($newEndAt);
+
+                $auctionRepository->add($auction);
+            }
+
+            // cancel previous bid
+            $previousBid = $auction->getLastBid();
+
+            if ($previousBid instanceof Bid) {
+                $previousBid->setStatus(Bid::STATUS_OVERPAID);
+                $bidRepository->add($previousBid);
+
+                $messageService->transferToken(
+                    $auction->getTokenType(),
+                    $previousBid->getQuantity(),
+                    $previousBid->getDecimals(),
+                    $previousBid->getOwner()
+                );
+            }
+
+            // save the new bid
             $bidRepository->add($bid);
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
@@ -319,12 +345,16 @@ class BidController extends AbstractController
             ));
         }
 
+        if (((new \DateTime())->format('U') - $bid->getCreatedAt()->format('U')) < 600) {
+            throw new BadRequestException('You can only cancel an auction 600 seconds after it was created');
+        }
+
         $bid->setStatus(Auction::STATUS_CANCELLED);
         $bidRepository->add($bid);
 
         // add to queue
         if ($bid->getAuction() instanceof Auction) {
-            $messageService->transferCrypto(
+            $messageService->transferToken(
                 $bid->getAuction()->getTokenType(),
                 $bid->getQuantity(),
                 $bid->getDecimals(),

@@ -32,7 +32,7 @@ class MessageService
         $this->createMessage(Message::TASK_TRANSFER_NFT, $body);
     }
 
-    public function transferCrypto(
+    public function transferToken(
         string $tokenType,
         string $quantity,
         int    $decimals,
