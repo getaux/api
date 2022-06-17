@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Client;
 
-use http\Client\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ImmutableXClient
@@ -20,8 +19,8 @@ class ImmutableXClient
     private string $env = 'dev';
 
     public function __construct(
-        private HttpClientInterface $httpClient,
-        string                      $env
+        private readonly HttpClientInterface $httpClient,
+        string                               $env
     )
     {
         $this->setEnvironment($env);

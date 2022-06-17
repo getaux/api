@@ -27,7 +27,18 @@ class BidFixtures extends Fixture
                 $bid->setTransferId((string)$transferId);
                 $bid->setDecimals(18);
                 $bid->setOwner('0xb8f6577961ff927c70d26ac7b691474e5a8e2927');
-                $bid->setStatus($maxBids === $i ? Bid::STATUS_ACTIVE : Bid::STATUS_OVERPAID);
+
+                if ($auction->getStatus() === Auction::STATUS_CANCELLED ||
+                    $auction->getStatus() === Auction::STATUS_EXPIRED
+                ) {
+                    $status = Bid::STATUS_CANCELLED;
+                } else if ($maxBids === $i) {
+                    $status = Bid::STATUS_ACTIVE;
+                } else {
+                    $status = Bid::STATUS_OVERPAID;
+                }
+
+                $bid->setStatus($status);
 
                 $manager->persist($bid);
 
