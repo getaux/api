@@ -14,7 +14,6 @@ class MessageFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 10; $i++) {
-
             $task = Message::TASKS[rand(0, count(Message::TASKS) - 1)];
 
             if ($task === Message::TASK_TRANSFER_NFT) {

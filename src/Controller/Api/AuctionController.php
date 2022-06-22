@@ -64,7 +64,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(enum: FilterAuctionsType::ORDER_FIELDS),
                 ],
             ),
-            new OA\Parameter(name: 'direction',
+            new OA\Parameter(
+                name: 'direction',
                 description: 'Direction to sort (asc/desc)',
                 in: 'query',
                 required: false,
@@ -72,7 +73,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'direction', enum: SortHelper::WAYS),
                 ],
             ),
-            new OA\Parameter(name: 'type',
+            new OA\Parameter(
+                name: 'type',
                 description: 'Type of these auctions',
                 in: 'query',
                 required: false,
@@ -80,7 +82,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'type', enum: Auction::TYPES),
                 ],
             ),
-            new OA\Parameter(name: 'status',
+            new OA\Parameter(
+                name: 'status',
                 description: 'Status of these auctions',
                 in: 'query',
                 required: false,
@@ -88,7 +91,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'status', enum: Auction::STATUS),
                 ],
             ),
-            new OA\Parameter(name: 'tokenType',
+            new OA\Parameter(
+                name: 'tokenType',
                 description: 'Token type of the asset these auctions',
                 in: 'query',
                 required: false,
@@ -96,7 +100,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'tokenType', enum: TokenHelper::TOKENS),
                 ],
             ),
-            new OA\Parameter(name: 'collection',
+            new OA\Parameter(
+                name: 'collection',
                 description: 'Collection contract address',
                 in: 'query',
                 required: false,
@@ -104,7 +109,8 @@ class AuctionController extends AbstractController
                     new OA\Schema(title: 'collection', type: 'string'),
                 ],
             ),
-            new OA\Parameter(name: 'owner',
+            new OA\Parameter(
+                name: 'owner',
                 description: 'Auction owner address',
                 in: 'query',
                 required: false,
@@ -209,8 +215,7 @@ class AuctionController extends AbstractController
         Request           $request,
         AuctionRepository $auctionRepository,
         ImmutableService  $immutableService
-    ): Response
-    {
+    ): Response {
         $auction = new Auction();
         $form = $this->createForm(AddAuctionType::class, $auction);
 
@@ -274,8 +279,7 @@ class AuctionController extends AbstractController
         AuctionRepository $auctionRepository,
         SignatureService  $signatureService,
         MessageService    $messageService
-    ): Response
-    {
+    ): Response {
         $auction = $auctionRepository->findOneBy([
             'id' => $id,
             'status' => Auction::STATUS_ACTIVE,
@@ -306,7 +310,8 @@ class AuctionController extends AbstractController
         }
 
         if (strtolower($auction->getOwner()) !== strtolower($cancelAuction->getPublicKey())) {
-            throw new UnauthorizedHttpException('', sprintf('Address %s is not the owner of auction %s',
+            throw new UnauthorizedHttpException('', sprintf(
+                'Address %s is not the owner of auction %s',
                 $cancelAuction->getPublicKey(),
                 $id,
             ));

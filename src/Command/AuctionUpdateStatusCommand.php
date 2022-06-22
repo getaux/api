@@ -20,13 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class AuctionUpdateStatusCommand extends Command
 {
-    const FEES_PERCENT = 2;
+    public const FEES_PERCENT = 2;
 
     public function __construct(
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -35,7 +34,6 @@ class AuctionUpdateStatusCommand extends Command
         $endedAuctions = $this->auctionRepository->findEndedAuctions(new \DateTime());
 
         foreach ($endedAuctions as $auction) {
-
             if (!$auction->getAsset() instanceof Asset) {
                 continue;
             }
@@ -63,7 +61,6 @@ class AuctionUpdateStatusCommand extends Command
                 );
 
                 $auction->setStatus(Auction::STATUS_FILLED);
-
             } else {
                 // event, just refund the seller
                 $this->messageService->transferNFT(

@@ -59,8 +59,7 @@ class MessageController extends AbstractController
     public function receive(
         Request           $request,
         MessageRepository $messageRepository
-    ): Response
-    {
+    ): Response {
         $body = RequestBodyHelper::map($request);
 
         $message = $messageRepository->findOneBy([

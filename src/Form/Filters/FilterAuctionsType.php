@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 
 class FilterAuctionsType extends AbstractFilterType
 {
-    const ORDER_FIELDS = ['createdAt', 'endAt', 'quantity'];
+    public const ORDER_FIELDS = ['createdAt', 'endAt', 'quantity'];
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

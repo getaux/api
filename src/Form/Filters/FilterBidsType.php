@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 class FilterBidsType extends AbstractFilterType
 {
-    const ORDER_FIELDS = ['createdAt', 'quantity'];
+    public const ORDER_FIELDS = ['createdAt', 'quantity'];
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

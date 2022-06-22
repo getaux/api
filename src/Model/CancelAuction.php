@@ -6,5 +6,4 @@ namespace App\Model;
 
 class CancelAuction extends AbstractCancelModel
 {
-
 }

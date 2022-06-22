@@ -6,5 +6,4 @@ namespace App\Client;
 
 class ImmutableXClientException extends \Exception
 {
-    
 }

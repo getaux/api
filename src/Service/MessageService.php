@@ -18,8 +18,7 @@ class MessageService
         string $tokenId,
         string $tokenAddress,
         string $receiverAddress
-    ): void
-    {
+    ): void {
         $body = [
             'asset' => [
                 'token_address' => $tokenAddress,
@@ -37,8 +36,7 @@ class MessageService
         string $quantity,
         int    $decimals,
         string $receiverAddress
-    ): void
-    {
+    ): void {
         $body = [
             'asset' => [
                 'token_type' => $tokenType,

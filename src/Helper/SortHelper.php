@@ -6,7 +6,7 @@ namespace App\Helper;
 
 class SortHelper
 {
-    const WAYS = [
+    public const WAYS = [
         'asc',
         'desc'
     ];

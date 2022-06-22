@@ -18,7 +18,7 @@ class AuctionFixtures extends Fixture
         $assets = $assetRepository->findAll();
 
         foreach ($assets as $asset) {
-            $auction = new Auction;
+            $auction = new Auction();
             $auction->setAsset($asset);
 
             $randQuantity = rand(10, 100);

@@ -52,7 +52,8 @@ class AssetController extends AbstractController
                     new OA\Schema(enum: FilterAssetsType::ORDER_FIELDS),
                 ],
             ),
-            new OA\Parameter(name: 'direction',
+            new OA\Parameter(
+                name: 'direction',
                 description: 'Direction to sort (asc/desc)',
                 in: 'query',
                 required: false,
@@ -60,7 +61,8 @@ class AssetController extends AbstractController
                     new OA\Schema(title: 'direction', enum: SortHelper::WAYS),
                 ],
             ),
-            new OA\Parameter(name: 'collection',
+            new OA\Parameter(
+                name: 'collection',
                 description: 'Collection contract address',
                 in: 'query',
                 required: false,

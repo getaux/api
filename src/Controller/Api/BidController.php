@@ -92,7 +92,8 @@ class BidController extends AbstractController
                     new OA\Schema(title: 'auction_id', type: 'string'),
                 ],
             ),
-            new OA\Parameter(name: 'owner',
+            new OA\Parameter(
+                name: 'owner',
                 description: 'Auction owner address',
                 in: 'query',
                 required: false,
@@ -205,8 +206,7 @@ class BidController extends AbstractController
         AuctionRepository $auctionRepository,
         ImmutableService  $immutableService,
         MessageService    $messageService
-    ): Response
-    {
+    ): Response {
         $bid = new Bid();
         $form = $this->createForm(AddBidType::class, $bid);
 
@@ -307,8 +307,7 @@ class BidController extends AbstractController
         BidRepository    $bidRepository,
         SignatureService $signatureService,
         MessageService   $messageService
-    ): Response
-    {
+    ): Response {
         $bid = $bidRepository->findOneBy([
             'id' => $id,
             'status' => Auction::STATUS_ACTIVE,
@@ -339,7 +338,8 @@ class BidController extends AbstractController
         }
 
         if (strtolower($bid->getOwner()) !== strtolower($cancelBid->getPublicKey())) {
-            throw new UnauthorizedHttpException('', sprintf('Address %s is not the owner of id %s',
+            throw new UnauthorizedHttpException('', sprintf(
+                'Address %s is not the owner of id %s',
                 $cancelBid->getPublicKey(),
                 $id,
             ));

@@ -26,7 +26,7 @@ class AssetFixtures extends Fixture
         ]);
 
         foreach ($realAssets['result'] as $realAsset) {
-            $asset = new Asset;
+            $asset = new Asset();
             $asset->setName($realAsset['name']);
             $asset->setTokenId($realAsset['token_id']);
             $asset->setInternalId($realAsset['id']);

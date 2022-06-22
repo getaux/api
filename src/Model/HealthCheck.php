@@ -22,6 +22,6 @@ class HealthCheck
 
     public function __construct()
     {
-        $this->timestamp = (new \DateTime)->format(\DateTimeInterface::ATOM);
+        $this->timestamp = (new \DateTime())->format(\DateTimeInterface::ATOM);
     }
 }

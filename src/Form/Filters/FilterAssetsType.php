@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class FilterAssetsType extends AbstractFilterType
 {
-    const ORDER_FIELDS = ['name', 'createdAt', 'internalId'];
+    public const ORDER_FIELDS = ['name', 'createdAt', 'internalId'];
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

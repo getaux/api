@@ -21,7 +21,7 @@ class BidFixtures extends Fixture
         foreach ($auctions as $auction) {
             $maxBids = rand(2, 5);
             for ($i = 1; $i <= $maxBids; $i++) {
-                $bid = new Bid;
+                $bid = new Bid();
                 $bid->setAuction($auction);
                 $bid->setQuantity((string)($i * pow(10, 18)));
                 $bid->setTransferId((string)$transferId);
@@ -32,7 +32,7 @@ class BidFixtures extends Fixture
                     $auction->getStatus() === Auction::STATUS_EXPIRED
                 ) {
                     $status = Bid::STATUS_CANCELLED;
-                } else if ($maxBids === $i) {
+                } elseif ($maxBids === $i) {
                     $status = Bid::STATUS_ACTIVE;
                 } else {
                     $status = Bid::STATUS_OVERPAID;

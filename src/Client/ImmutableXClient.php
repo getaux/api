@@ -21,8 +21,7 @@ class ImmutableXClient
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         string                               $env
-    )
-    {
+    ) {
         $this->setEnvironment($env);
     }
 

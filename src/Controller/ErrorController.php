@@ -17,7 +17,7 @@ class ErrorController extends AbstractController
 
         if (method_exists($exception, 'getCode') && $exception->getCode() >= 100) {
             $statusCode = $exception->getCode();
-        } else if (method_exists($exception, 'getStatusCode')) {
+        } elseif (method_exists($exception, 'getStatusCode')) {
             $statusCode = $exception->getStatusCode();
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
