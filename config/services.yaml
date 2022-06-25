@@ -23,14 +23,25 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Client\ImmutableXClient:
+        arguments:
+            $env: '%env(IMX_API_ENV)%'
+
+    App\Command\AuctionUpdateStatusCommand:
+        arguments:
+            $auctionRepository: '@App\Repository\AuctionRepository'
+            $messageService: '@App\Service\MessageService'
+            $percentFees: '%env(PERCENT_FEES)%'
+
     App\Controller\Bus\MessageController:
         arguments:
             $requestStack: '@request_stack'
             $apiKey: '%env(BUS_API_KEY)%'
 
-    App\Client\ImmutableXClient:
+    App\Model\Wallet:
         arguments:
-            $env: '%env(IMX_API_ENV)%'
+            $publicKey: '%env(IMX_ESCROW_WALLET)%'
+            $network: '%env(IMX_API_ENV)%'
 
     App\Service\ImmutableService:
         arguments:
@@ -38,8 +49,3 @@ services:
             $assetRepository: '@App\Repository\AssetRepository'
             $entityManager: '@doctrine.orm.entity_manager'
             $escrowWallet: '%env(IMX_ESCROW_WALLET)%'
-
-    App\Model\Wallet:
-        arguments:
-            $publicKey: '%env(IMX_ESCROW_WALLET)%'
-            $network: '%env(IMX_API_ENV)%'

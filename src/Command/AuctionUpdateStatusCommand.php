@@ -20,12 +20,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class AuctionUpdateStatusCommand extends Command
 {
-    public const FEES_PERCENT = 2;
+    private float $percentFees;
 
     public function __construct(
         private readonly AuctionRepository $auctionRepository,
-        private readonly MessageService    $messageService
-    ) {
+        private readonly MessageService    $messageService,
+        float                              $percentFees
+    )
+    {
+        $this->percentFees = $percentFees;
         parent::__construct();
     }
 
@@ -50,7 +53,7 @@ class AuctionUpdateStatusCommand extends Command
                     $lastBid->getOwner()
                 );
 
-                $quantity = intval($lastBid->getQuantity()) * (1 - (self::FEES_PERCENT / 100));
+                $quantity = intval($lastBid->getQuantity()) * (1 - ($this->percentFees / 100));
 
                 // transfer token to seller
                 $this->messageService->transferToken(
