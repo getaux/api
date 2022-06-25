@@ -20,15 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class AuctionUpdateStatusCommand extends Command
 {
-    private float $percentFees;
-
     public function __construct(
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService,
-        float                              $percentFees
+        private readonly float             $percentFees
     )
     {
-        $this->percentFees = $percentFees;
         parent::__construct();
     }
 
