@@ -20,7 +20,8 @@ class ImmutableService
         private readonly AssetRepository        $assetRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet
-    ) {
+    )
+    {
     }
 
     public function checkAuctionDeposit(Auction $auction): void
@@ -57,7 +58,7 @@ class ImmutableService
         $asset->setInternalId($apiAssetResult['id']);
         $asset->setTokenId($apiAssetResult['token_id']);
         $asset->setImageUrl($apiAssetResult['image_url']);
-        $asset->setName($apiAssetResult['name']);
+        $asset->setName((string)$apiAssetResult['name']);
         $asset->setTokenAddress($apiAssetResult['token_address']);
         $asset->setInternalId($apiAssetResult['token_id']);
 
