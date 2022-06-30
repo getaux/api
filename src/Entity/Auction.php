@@ -68,7 +68,7 @@ class Auction
     #[OA\Property(description: 'IMX transfer ID (asset deposit)', example: 4452442)]
     private string $transferId;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'string')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(description: 'Quantity of this asset (price)', example: 1000000000000000000)]
     private string $quantity;
