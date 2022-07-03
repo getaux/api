@@ -20,8 +20,7 @@ class ImmutableService
         private readonly AssetRepository        $assetRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet
-    )
-    {
+    ) {
     }
 
     public function checkAuctionDeposit(Auction $auction): void

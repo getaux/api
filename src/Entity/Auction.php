@@ -70,7 +70,7 @@ class Auction
 
     #[ORM\Column(type: 'string')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
-    #[OA\Property(description: 'Quantity of this asset (price)', example: 1000000000000000000)]
+    #[OA\Property(description: 'Quantity of this asset (price)', example: "1000000000000000000")]
     private string $quantity;
 
     #[ORM\Column(type: 'integer')]
@@ -81,6 +81,11 @@ class Auction
         example: 18,
     )]
     private int $decimals;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
+    #[OA\Property(description: 'Reserve quantity of this asset (reserve price)', example: "2000000000000000000")]
+    private ?string $reserveQuantity;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
@@ -129,7 +134,7 @@ class Auction
     #[ORM\Column(type: 'datetime_immutable')]
     protected \DateTimeImmutable $updatedAt;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime_immutable')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
     #[OA\Property(
         description: 'End timestamp of this auction',
@@ -137,7 +142,7 @@ class Auction
         format: 'datetime',
         example: '2030-12-31T23:59:59.999Z',
     )]
-    private \DateTimeInterface $endAt;
+    private \DateTimeImmutable $endAt;
 
     public function __construct()
     {
@@ -341,5 +346,17 @@ class Auction
     public function getLastBid(): Bid|false
     {
         return $this->getBids()->last();
+    }
+
+    public function getReserveQuantity(): ?string
+    {
+        return $this->reserveQuantity;
+    }
+
+    public function setReserveQuantity(?string $reserveQuantity): self
+    {
+        $this->reserveQuantity = $reserveQuantity;
+
+        return $this;
     }
 }

@@ -24,8 +24,7 @@ class AuctionUpdateStatusCommand extends Command
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService,
         private readonly float             $percentFees
-    )
-    {
+    ) {
         parent::__construct();
     }
 

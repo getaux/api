@@ -24,6 +24,12 @@ class AuctionFixtures extends Fixture
             $randQuantity = rand(10, 100);
 
             $auction->setQuantity((string)($randQuantity * pow(10, 16)));
+
+            // randomly add reserve quantity (2 times base price)
+            if (rand(0, 1) === 0) {
+                $auction->setReserveQuantity((string)($randQuantity * pow(10, 16) * 2));
+            }
+
             $auction->setDecimals(18);
 
             $auction->setType(Auction::TYPES[rand(0, count(Auction::TYPES) - 1)]);

@@ -63,7 +63,7 @@ class Bid
 
     #[ORM\Column(type: 'bigint')]
     #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
-    #[OA\Property(description: 'Quantity of this bid (price)', example: 1000000000000000000)]
+    #[OA\Property(description: 'Quantity of this bid (price)', example: "1000000000000000000")]
     private string $quantity = '0';
 
     #[ORM\Column(type: 'integer')]
@@ -94,6 +94,16 @@ class Bid
     #[Gedmo\Timestampable(on: 'update')]
     #[ORM\Column(type: 'datetime_immutable')]
     protected \DateTimeImmutable $updatedAt;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups([self::GROUP_GET_BID, Auction::GROUP_GET_AUCTION])]
+    #[OA\Property(
+        description: 'End timestamp of this bid',
+        type: 'string',
+        format: 'datetime',
+        example: '2030-12-31T23:59:59.999Z',
+    )]
+    private \DateTimeImmutable $endAt;
 
     public function getId(): ?int
     {
@@ -192,6 +202,18 @@ class Bid
     public function setOwner(string $owner): self
     {
         $this->owner = strtolower($owner);
+
+        return $this;
+    }
+
+    public function getEndAt(): ?\DateTimeImmutable
+    {
+        return $this->endAt;
+    }
+
+    public function setEndAt(\DateTimeImmutable $endAt): self
+    {
+        $this->endAt = $endAt;
 
         return $this;
     }

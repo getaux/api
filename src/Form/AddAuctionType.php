@@ -39,6 +39,10 @@ class AddAuctionType extends AbstractType
                 new NotBlank([], 'Missing parameter: decimals field should not be blank'),
                 new Positive([], 'Invalid parameter: decimals should be positive'),
             ],
+        ])->add('reserveQuantity', TextType::class, [
+            'constraints' => [
+                new Positive([], 'Invalid parameter: reserve_quantity should be positive'),
+            ],
         ])->add('tokenType', TextType::class, [
             'constraints' => [
                 new NotBlank([], 'Missing parameter: tokenType field should not be blank'),

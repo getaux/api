@@ -40,6 +40,14 @@ class BidFixtures extends Fixture
 
                 $bid->setStatus($status);
 
+                $dateTime = new \DateTime('+1 week');
+                $dateFormat = $dateTime->format('Y-m-d H:i:00');
+                $dateImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
+
+                if ($dateImmutable) {
+                    $bid->setEndAt($dateImmutable);
+                }
+
                 $manager->persist($bid);
 
                 $transferId++;
