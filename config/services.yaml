@@ -37,6 +37,7 @@ services:
         arguments:
             $requestStack: '@request_stack'
             $apiKey: '%env(BUS_API_KEY)%'
+            $env: '%env(IMX_API_ENV)%'
 
     App\Model\Wallet:
         arguments:

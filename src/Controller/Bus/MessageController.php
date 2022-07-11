@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/messages')]
 class MessageController extends AbstractController
 {
-    public function __construct(RequestStack $requestStack, string $apiKey)
+    public function __construct(RequestStack $requestStack, string $apiKey, private string $env)
     {
         // handle error if request stack is empty - avoid wrong code/file usage
         if (!$requestStack->getCurrentRequest()) {
@@ -44,7 +44,8 @@ class MessageController extends AbstractController
             $messageRepository->add($message);
 
             $payload = [
-                'message' => $message
+                'message' => $message,
+                'environment' => $this->env
             ];
         } else {
             $payload = [
