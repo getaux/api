@@ -206,14 +206,23 @@ class Bid
         return $this;
     }
 
-    public function getEndAt(): ?\DateTimeImmutable
+    public function getEndAt(): \DateTimeInterface
     {
         return $this->endAt;
     }
 
-    public function setEndAt(\DateTimeImmutable $endAt): self
+    public function setEndAt(?\DateTimeInterface $endAt): self
     {
-        $this->endAt = $endAt;
+        if (!$endAt) {
+            $endAt = new \DateTime('+7 days');
+        }
+
+        $dateFormat = $endAt->format('Y-m-d H:i:00');
+        $dateImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
+
+        if ($dateImmutable) {
+            $this->endAt = $dateImmutable;
+        }
 
         return $this;
     }

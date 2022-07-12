@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Bid;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,6 +28,9 @@ class AddBidType extends AbstractType
                 new Positive([], 'Invalid parameter: decimals should be positive'),
             ],
             'mapped' => false,
+        ])->add('endAt', DateTimeType::class, [
+            'widget' => 'single_text',
+            'html5' => false,
         ]);
     }
 

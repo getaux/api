@@ -192,6 +192,13 @@ class BidController extends AbstractController
                     type: 'integer',
                     example: 1
                 ),
+                new OA\Property(
+                    property: 'endAt',
+                    description: 'End timestamp of this bid',
+                    type: 'string',
+                    format: 'datetime',
+                    example: '2030-12-31T23:59:59.999Z'
+                ),
             ],
         ),
     )]
