@@ -19,8 +19,10 @@ class ImmutableService
         private readonly ImmutableXClient       $immutableXClient,
         private readonly AssetRepository        $assetRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly string                 $escrowWallet
-    ) {
+        private readonly string                 $escrowWallet,
+        private readonly MessageService         $messageService,
+    )
+    {
     }
 
     public function checkAuctionDeposit(Auction $auction): void
@@ -80,9 +82,26 @@ class ImmutableService
         $token = TokenHelper::getTokenFromIMXTransfer($transfer);
 
         if ($token !== $auction->getTokenType()) {
-            throw new BadRequestException(
-                sprintf('Invalid bid currency: %s sent, %s excepted', $token, $auction->getTokenType())
+            // we have to refund bid in this case
+            $this->messageService->transferToken(
+                $token,
+                $transfer['token']['data']['quantity'],
+                $transfer['token']['data']['decimals'],
+                $transfer['user']
             );
+            throw new BadRequestException(
+                sprintf('Invalid bid currency: %s sent, %s excepted. Refund in progress.', $token, $auction->getTokenType())
+            );
+        }
+
+        if ($transfer['token']['data']['quantity'] < $auction->getQuantity()) {
+            $this->messageService->transferToken(
+                $token,
+                $transfer['token']['data']['quantity'],
+                $transfer['token']['data']['decimals'],
+                $transfer['user']
+            );
+            throw new BadRequestException('Bid should be superior to auction price. Refund in progress.');
         }
 
         $bid->setQuantity($transfer['token']['data']['quantity']);

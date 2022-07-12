@@ -213,7 +213,8 @@ class BidController extends AbstractController
         AuctionRepository $auctionRepository,
         ImmutableService  $immutableService,
         MessageService    $messageService
-    ): Response {
+    ): Response
+    {
         $bid = new Bid();
         $form = $this->createForm(AddBidType::class, $bid);
 
@@ -251,23 +252,46 @@ class BidController extends AbstractController
                 $auctionRepository->add($auction);
             }
 
-            // cancel previous bid
+            // fetch previous bid
             $previousBid = $auction->getLastBid();
 
-            if ($previousBid instanceof Bid) {
-                $previousBid->setStatus(Bid::STATUS_OVERPAID);
-                $bidRepository->add($previousBid);
+            $newBidError = null;
 
-                $messageService->transferToken(
-                    $auction->getTokenType(),
-                    $previousBid->getQuantity(),
-                    $previousBid->getDecimals(),
-                    $previousBid->getOwner()
-                );
+            if ($previousBid instanceof Bid) {
+                // check if the new bid is higher than previous one
+                if ($bid->getQuantity() <= $previousBid->getQuantity()) {
+                    // we have to refund bid
+                    $messageService->transferToken(
+                        $auction->getTokenType(),
+                        $bid->getQuantity(),
+                        $bid->getDecimals(),
+                        $bid->getOwner()
+                    );
+                    $newBidError = 'Bid should be superior to previous bid';
+                }
+
+                if ($newBidError === null) {
+                    $previousBid->setStatus(Bid::STATUS_OVERPAID);
+                    $bidRepository->add($previousBid);
+
+                    // we refund previous bid
+                    $messageService->transferToken(
+                        $auction->getTokenType(),
+                        $previousBid->getQuantity(),
+                        $previousBid->getDecimals(),
+                        $previousBid->getOwner()
+                    );
+                } else {
+                    $bid->setStatus(Bid::STATUS_INVALID);
+                }
             }
 
-            // save the new bid
             $bidRepository->add($bid);
+
+            if ($newBidError) {
+                throw new BadRequestException($newBidError);
+            }
+
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
@@ -314,7 +338,8 @@ class BidController extends AbstractController
         BidRepository    $bidRepository,
         SignatureService $signatureService,
         MessageService   $messageService
-    ): Response {
+    ): Response
+    {
         $bid = $bidRepository->findOneBy([
             'id' => $id,
             'status' => Auction::STATUS_ACTIVE,

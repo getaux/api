@@ -61,7 +61,7 @@ class AuctionUpdateStatusCommand extends Command
 
                 $auction->setStatus(Auction::STATUS_FILLED);
             } else {
-                // event, just refund the seller
+                // even, return NFT to the seller
                 $this->messageService->transferNFT(
                     $auction->getAsset()->getInternalId(),
                     $auction->getAsset()->getTokenId(),
