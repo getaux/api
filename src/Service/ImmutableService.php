@@ -21,8 +21,7 @@ class ImmutableService
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet,
         private readonly MessageService         $messageService,
-    )
-    {
+    ) {
     }
 
     public function checkAuctionDeposit(Auction $auction): void

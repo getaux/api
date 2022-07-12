@@ -213,8 +213,7 @@ class BidController extends AbstractController
         AuctionRepository $auctionRepository,
         ImmutableService  $immutableService,
         MessageService    $messageService
-    ): Response
-    {
+    ): Response {
         $bid = new Bid();
         $form = $this->createForm(AddBidType::class, $bid);
 
@@ -291,7 +290,6 @@ class BidController extends AbstractController
             if ($newBidError) {
                 throw new BadRequestException($newBidError);
             }
-
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
         }
@@ -338,8 +336,7 @@ class BidController extends AbstractController
         BidRepository    $bidRepository,
         SignatureService $signatureService,
         MessageService   $messageService
-    ): Response
-    {
+    ): Response {
         $bid = $bidRepository->findOneBy([
             'id' => $id,
             'status' => Auction::STATUS_ACTIVE,
