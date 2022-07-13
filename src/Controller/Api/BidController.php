@@ -212,7 +212,6 @@ class BidController extends AbstractController
         BidRepository     $bidRepository,
         AuctionRepository $auctionRepository,
         ImmutableService  $immutableService,
-        MessageService    $messageService
     ): Response {
         $bid = new Bid();
         $form = $this->createForm(AddBidType::class, $bid);

@@ -37,8 +37,7 @@ class ImmutableXClient
         }
     }
 
-    /** @todo manage errors & rate limit */
-    public function get(string $method, array $parameters = []): array
+    public function get(string $method, array $parameters = [], bool $retry = false): array
     {
         $endpoint = $this->getDomain() . $method;
 
@@ -54,6 +53,11 @@ class ImmutableXClient
         $content = $response->toArray(false);
 
         if ($response->getStatusCode() !== 200) {
+            if ($retry === false) {
+                usleep(1000000);
+                $this->get($method, $parameters, true);
+            }
+
             throw new ImmutableXClientException(
                 sprintf('IMX API Error: %s', $content['message']),
                 $response->getStatusCode()
