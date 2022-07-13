@@ -44,6 +44,11 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
         $qb = $this->createQueryBuilder('b')
             ->select('count (b.id) as totalResults');
 
+        if (!isset($filters['status'])) {
+            $qb->andWhere('b.status != :invalidStatus')
+                ->setParameter('invalidStatus', Bid::STATUS_INVALID);
+        }
+
         if (isset($filters['auction_id'])) {
             $qb->join('b.auction', 'a')
                 ->andWhere('a.id = :auctionId')
@@ -63,6 +68,11 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
     public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
     {
         $qb = $this->createQueryBuilder('b');
+
+        if (!isset($filters['status'])) {
+            $qb->andWhere('b.status != :invalidStatus')
+                ->setParameter('invalidStatus', Bid::STATUS_INVALID);
+        }
 
         if (isset($filters['auction_id'])) {
             $qb->join('b.auction', 'a')

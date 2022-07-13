@@ -128,12 +128,12 @@ class BidController extends AbstractController
 
         list($filters, $order, $limit, $offset) = $filterService->map((array)$form->getData());
 
-        $totalAuctions = $bidRepository->customCount($filters);
+        $totalBids = $bidRepository->customCount($filters);
         $bids = $bidRepository->customFindAll($filters, $order, $limit, $offset);
 
         return $this->json([
             'result' => $bids,
-            'totalResults' => $totalAuctions,
+            'totalResults' => $totalBids,
         ], Response::HTTP_OK, [], [
             'groups' => [
                 Bid::GROUP_GET_BID,
