@@ -37,7 +37,7 @@ class ImmutableXClient
         }
     }
 
-    public function get(string $method, array $parameters = [], bool $retry = false): array
+    public function get(string $method, array $parameters = [], bool $withRetry = true): array
     {
         $endpoint = $this->getDomain() . $method;
 
@@ -53,9 +53,9 @@ class ImmutableXClient
         $content = $response->toArray(false);
 
         if ($response->getStatusCode() !== 200) {
-            if ($retry === false) {
+            if ($withRetry === true) {
                 usleep(1000000);
-                $this->get($method, $parameters, true);
+                $this->get($method, $parameters, false);
             }
 
             throw new ImmutableXClientException(

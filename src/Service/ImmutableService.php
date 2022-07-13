@@ -71,7 +71,7 @@ class ImmutableService
 
     public function checkBidDeposit(Bid $bid, Auction $auction): void
     {
-        $transfer = $this->immutableXClient->get(sprintf('v1/transfers/%s', $bid->getTransferId()));
+        $transfer = $this->immutableXClient->get(sprintf('v1/transfers/%s', $bid->getTransferId()), [], false);
 
         // update bid with api response
         $bid->setQuantity($transfer['token']['data']['quantity']);
