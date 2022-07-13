@@ -255,9 +255,13 @@ class BidController extends AbstractController
             } catch (\Exception $e) {
                 // error in checkBidDeposit, so we have to save bid and set status to invalid
                 $bid->setStatus(Bid::STATUS_INVALID);
-                $bidRepository->add($bid);
 
-                throw new BadRequestException($e->getMessage());
+                // do not same bid if is not found
+                if($e->getCode() !== Response::HTTP_NOT_FOUND){
+                    $bidRepository->add($bid);
+                }
+
+                throw new \Exception($e->getMessage(), $e->getCode());
             }
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));
