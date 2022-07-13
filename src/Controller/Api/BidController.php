@@ -17,6 +17,7 @@ use App\Helper\StringHelper;
 use App\Model\CancelBid;
 use App\Repository\AuctionRepository;
 use App\Repository\BidRepository;
+use App\Service\Exception\BadBidException;
 use App\Service\FilterService;
 use App\Service\ImmutableService;
 use App\Service\MessageService;
@@ -252,15 +253,12 @@ class BidController extends AbstractController
                 }
 
                 $bidRepository->add($bid);
-            } catch (\Exception $exception) {
-                // error in checkBidDeposit, so we have to save bid and set status to invalid
+            } catch (BadBidException $badBidException) {
                 $bid->setStatus(Bid::STATUS_INVALID);
+                $bidRepository->add($bid);
 
-                // do not save bid if is not found
-                if ($exception->getCode() !== Response::HTTP_NOT_FOUND) {
-                    $bidRepository->add($bid);
-                }
-
+                throw new BadRequestHttpException($badBidException->getMessage());
+            } catch (\Exception $exception) {
                 throw new (get_class($exception))($exception->getMessage(), $exception->getCode());
             }
         } else {

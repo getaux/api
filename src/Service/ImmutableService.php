@@ -11,6 +11,7 @@ use App\Entity\Bid;
 use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
 use App\Repository\BidRepository;
+use App\Service\Exception\BadBidException;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ImmutableService
@@ -82,7 +83,7 @@ class ImmutableService
 
         // check if receiver is the escrow wallet
         if (strtolower($transfer['receiver']) !== strtolower($this->escrowWallet)) {
-            throw new \Exception(sprintf('Receiver of transfer %s is invalid', $bid->getTransferId()), 400);
+            throw new BadBidException(sprintf('Receiver of transfer %s is invalid', $bid->getTransferId()));
         }
 
         // check if bid currency is the same as auction
@@ -96,7 +97,7 @@ class ImmutableService
                 $transfer['token']['data']['decimals'],
                 $transfer['user']
             );
-            throw new \Exception(
+            throw new BadBidException(
                 sprintf('Invalid bid currency: %s sent, %s excepted. Refund in progress.', $token, $auction->getTokenType())
             );
         }
@@ -110,7 +111,7 @@ class ImmutableService
                 $transfer['token']['data']['decimals'],
                 $transfer['user']
             );
-            throw new \Exception('Bid should be superior to auction price. Refund in progress.');
+            throw new BadBidException('Bid should be superior to auction price. Refund in progress.');
         }
 
         // fetch previous bid
@@ -127,7 +128,7 @@ class ImmutableService
                     $bid->getOwner()
                 );
 
-                throw new \Exception('Bid should be superior to previous bid. Refund in progress.');
+                throw new BadBidException('Bid should be superior to previous bid. Refund in progress.');
             }
 
             $previousBid->setStatus(Bid::STATUS_OVERPAID);
