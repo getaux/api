@@ -38,7 +38,7 @@ class MessageService
         string $receiverAddress
     ): void {
         $body = [
-            'asset' => [
+            'token' => [
                 'token_type' => $tokenType,
                 'quantity' => $quantity,
                 'decimals' => $decimals,
