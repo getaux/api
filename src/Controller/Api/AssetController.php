@@ -30,7 +30,7 @@ class AssetController extends AbstractController
         summary: 'Get a list of assets',
         parameters: [
             new OA\Parameter(
-                name: 'page_size',
+                name: 'pageSize',
                 description: 'Page size of the result',
                 in: 'query',
                 required: false,
@@ -44,7 +44,7 @@ class AssetController extends AbstractController
                 schema: new OA\Schema(type: 'integer'),
             )
             , new OA\Parameter(
-                name: 'order_by',
+                name: 'orderBy',
                 description: 'Property to sort by',
                 in: 'query',
                 required: false,

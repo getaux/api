@@ -10,9 +10,9 @@ class FilterService
     {
         $filters = [
             'filters' => [],
-            'order_by' => 'id',
-            'order_direction' => 'desc',
-            'page_size' => 20,
+            'orderBy' => 'id',
+            'orderDirection' => 'desc',
+            'pageSize' => 20,
             'page' => 0,
         ];
 
@@ -22,14 +22,14 @@ class FilterService
                     case 'page':
                         $filters['page'] = $value;
                         break;
-                    case 'page_size':
-                        $filters['page_size'] = $value;
+                    case 'pageSize':
+                        $filters['pageSize'] = $value;
                         break;
-                    case 'order_by':
-                        $filters['order_by'] = $value;
+                    case 'orderBy':
+                        $filters['orderBy'] = $value;
                         break;
                     case 'direction':
-                        $filters['order_direction'] = $value;
+                        $filters['orderDirection'] = $value;
                         break;
                     default:
                         $filters['filters'][$field] = $value;
@@ -40,10 +40,10 @@ class FilterService
         return [
             $filters['filters'],
             [
-                $filters['order_by'] => $filters['order_direction'],
+                $filters['orderBy'] => $filters['orderDirection'],
             ],
-            $filters['page_size'],
-            $filters['page'] ? $filters['page_size'] * ($filters['page'] - 1) : null,
+            $filters['pageSize'],
+            $filters['page'] ? $filters['pageSize'] * ($filters['page'] - 1) : null,
         ];
     }
 }
