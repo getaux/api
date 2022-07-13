@@ -241,54 +241,24 @@ class BidController extends AbstractController
                 throw new ConflictHttpException(sprintf('Bid with transfer %s already exists', $bid->getTransferId()));
             }
 
-            $immutableService->checkBidDeposit($bid, $auction);
+            try {
+                $immutableService->checkBidDeposit($bid, $auction);
 
-            // add 10 more minutes if auction ending in less than 10 minutes
-            if (((new \DateTime())->format('U') - $auction->getEndAt()->format('U')) < 600) {
-                $newEndAt = new \DateTimeImmutable('+ 10 minutes');
-                $auction->setEndAt($newEndAt);
+                // add 10 more minutes if auction ending in less than 10 minutes
+                if (((new \DateTime())->format('U') - $auction->getEndAt()->format('U')) < 600) {
+                    $newEndAt = new \DateTimeImmutable('+ 10 minutes');
+                    $auction->setEndAt($newEndAt);
 
-                $auctionRepository->add($auction);
-            }
-
-            // fetch previous bid
-            $previousBid = $auction->getLastBid();
-
-            $newBidError = null;
-
-            if ($previousBid instanceof Bid) {
-                // check if the new bid is higher than previous one
-                if ($bid->getQuantity() <= $previousBid->getQuantity()) {
-                    // we have to refund bid
-                    $messageService->transferToken(
-                        $auction->getTokenType(),
-                        $bid->getQuantity(),
-                        $bid->getDecimals(),
-                        $bid->getOwner()
-                    );
-                    $newBidError = 'Bid should be superior to previous bid';
+                    $auctionRepository->add($auction);
                 }
 
-                if ($newBidError === null) {
-                    $previousBid->setStatus(Bid::STATUS_OVERPAID);
-                    $bidRepository->add($previousBid);
+                $bidRepository->add($bid);
+            } catch (\Exception $e) {
+                // error in checkBidDeposit, so we have to save bid and set status to invalid
+                $bid->setStatus(Bid::STATUS_INVALID);
+                $bidRepository->add($bid);
 
-                    // we refund previous bid
-                    $messageService->transferToken(
-                        $auction->getTokenType(),
-                        $previousBid->getQuantity(),
-                        $previousBid->getDecimals(),
-                        $previousBid->getOwner()
-                    );
-                } else {
-                    $bid->setStatus(Bid::STATUS_INVALID);
-                }
-            }
-
-            $bidRepository->add($bid);
-
-            if ($newBidError) {
-                throw new BadRequestException($newBidError);
+                throw new BadRequestException($e->getMessage());
             }
         } else {
             throw new BadRequestException(ResponseHelper::getFirstError((string)$form->getErrors(true)));

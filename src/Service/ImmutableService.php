@@ -10,8 +10,8 @@ use App\Entity\Auction;
 use App\Entity\Bid;
 use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
+use App\Repository\BidRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class ImmutableService
 {
@@ -21,6 +21,7 @@ class ImmutableService
         private readonly EntityManagerInterface $entityManager,
         private readonly string                 $escrowWallet,
         private readonly MessageService         $messageService,
+        private readonly BidRepository          $bidRepository,
     ) {
     }
 
@@ -72,6 +73,13 @@ class ImmutableService
     {
         $transfer = $this->immutableXClient->get(sprintf('v1/transfers/%s', $bid->getTransferId()));
 
+        // update bid with api response
+        $bid->setQuantity($transfer['token']['data']['quantity']);
+        $bid->setDecimals($transfer['token']['data']['decimals']);
+
+        $bid->setOwner($transfer['user']);
+        $bid->setCreatedAt(new \DateTimeImmutable($transfer['timestamp']));
+
         // check if receiver is the escrow wallet
         if (strtolower($transfer['receiver']) !== strtolower($this->escrowWallet)) {
             throw new \Exception(sprintf('Receiver of transfer %s is invalid', $bid->getTransferId()), 400);
@@ -81,32 +89,57 @@ class ImmutableService
         $token = TokenHelper::getTokenFromIMXTransfer($transfer);
 
         if ($token !== $auction->getTokenType()) {
-            // we have to refund bid in this case
+            // we refund bid
             $this->messageService->transferToken(
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
                 $transfer['user']
             );
-            throw new BadRequestException(
+            throw new \Exception(
                 sprintf('Invalid bid currency: %s sent, %s excepted. Refund in progress.', $token, $auction->getTokenType())
             );
         }
 
+        // check if bid quantity is superior to auction minimum price
         if ($transfer['token']['data']['quantity'] < $auction->getQuantity()) {
+            // we refund bid
             $this->messageService->transferToken(
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
                 $transfer['user']
             );
-            throw new BadRequestException('Bid should be superior to auction price. Refund in progress.');
+            throw new \Exception('Bid should be superior to auction price. Refund in progress.');
         }
 
-        $bid->setQuantity($transfer['token']['data']['quantity']);
-        $bid->setDecimals($transfer['token']['data']['decimals']);
+        // fetch previous bid
+        $previousBid = $auction->getLastBid();
 
-        $bid->setOwner($transfer['user']);
-        $bid->setCreatedAt(new \DateTimeImmutable($transfer['timestamp']));
+        if ($previousBid instanceof Bid) {
+            // check if the new bid is higher than previous one
+            if ($bid->getQuantity() <= $previousBid->getQuantity()) {
+                // we have to refund bid
+                $this->messageService->transferToken(
+                    $auction->getTokenType(),
+                    $bid->getQuantity(),
+                    $bid->getDecimals(),
+                    $bid->getOwner()
+                );
+
+                throw new \Exception('Bid should be superior to previous bid. Refund in progress.');
+            }
+
+            $previousBid->setStatus(Bid::STATUS_OVERPAID);
+            $this->bidRepository->add($previousBid);
+
+            // we refund previous bid
+            $this->messageService->transferToken(
+                $auction->getTokenType(),
+                $previousBid->getQuantity(),
+                $previousBid->getDecimals(),
+                $previousBid->getOwner()
+            );
+        }
     }
 }
