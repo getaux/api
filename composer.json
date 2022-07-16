@@ -6,6 +6,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.1",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-pgsql": "*",

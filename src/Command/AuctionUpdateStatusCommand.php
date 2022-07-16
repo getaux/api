@@ -49,7 +49,7 @@ class AuctionUpdateStatusCommand extends Command
                     $lastBid->getOwner()
                 );
 
-                $quantity = intval($lastBid->getQuantity()) * (1 - ($this->percentFees / 100));
+                $quantity = bcmul($lastBid->getQuantity(), (string)(1 - ($this->percentFees / 100)));
 
                 // transfer token to seller
                 $this->messageService->transferToken(
