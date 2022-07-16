@@ -54,7 +54,7 @@ class AuctionUpdateStatusCommand extends Command
                 // transfer token to seller
                 $this->messageService->transferToken(
                     $auction->getTokenType(),
-                    strval($quantity),
+                    $quantity,
                     $lastBid->getDecimals(),
                     $auction->getOwner()
                 );
