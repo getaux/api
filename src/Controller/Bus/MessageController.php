@@ -53,7 +53,11 @@ class MessageController extends AbstractController
             ];
         }
 
-        return $this->json($payload);
+        return $this->json($payload, Response::HTTP_OK, [], [
+            'groups' => [
+                Message::GROUP_GET_MESSAGE,
+            ]
+        ]);
     }
 
     #[Route(name: 'api_bus_receive', methods: 'POST')]

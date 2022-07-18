@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
@@ -33,31 +34,41 @@ class Message
         self::TASK_PAYMENT,
         self::TASK_PAYMENT_FEES,
     ];
+    
+    public const GROUP_GET_MESSAGE = 'get-message';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private string $task;
 
     #[ORM\Column(type: 'text')]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private string $body;
 
     #[ORM\Column(type: 'text')]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private string $status = self::STATUS_TODO;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private ?string $response;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private ?\DateTimeImmutable $deliveredAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Groups([self::GROUP_GET_MESSAGE])]
     private ?\DateTimeImmutable $processedAt;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
