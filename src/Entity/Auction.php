@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(description: 'Auction linked to an asset', required: [
     'type', 'status', 'transferId', 'quantity', 'decimals', 'tokenType', 'endAt'
 ])]
-class Auction
+class Auction implements MessageableInterface
 {
     public const STATUS_ACTIVE = 'active';
     public const STATUS_FILLED = 'filled';

@@ -32,6 +32,7 @@ services:
             $auctionRepository: '@App\Repository\AuctionRepository'
             $messageService: '@App\Service\MessageService'
             $percentFees: '%env(PERCENT_FEES)%'
+            $feesWallet: '%env(IMX_FEES_WALLET)%'
 
     App\Controller\Bus\MessageController:
         arguments:

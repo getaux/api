@@ -38,6 +38,7 @@ RUN set -eux; \
         gmp \
         xml \
         pgsql \
+        bcmath \
     ; \
 	pecl install \
 		apcu-${APCU_VERSION} \

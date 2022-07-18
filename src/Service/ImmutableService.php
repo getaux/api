@@ -8,6 +8,7 @@ use App\Client\ImmutableXClient;
 use App\Entity\Asset;
 use App\Entity\Auction;
 use App\Entity\Bid;
+use App\Entity\Message;
 use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
 use App\Repository\BidRepository;
@@ -92,10 +93,12 @@ class ImmutableService
         if ($token !== $auction->getTokenType()) {
             // we refund bid
             $this->messageService->transferToken(
+                Message::TASK_REFUND_BID,
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
-                $transfer['user']
+                $transfer['user'],
+                $bid
             );
             throw new BadBidException(
                 sprintf('Invalid bid currency: %s sent, %s excepted. Refund in progress.', $token, $auction->getTokenType())
@@ -106,10 +109,12 @@ class ImmutableService
         if ($transfer['token']['data']['quantity'] < $auction->getQuantity()) {
             // we refund bid
             $this->messageService->transferToken(
+                Message::TASK_REFUND_BID,
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
-                $transfer['user']
+                $transfer['user'],
+                $bid
             );
             throw new BadBidException('Bid should be superior to auction price. Refund in progress.');
         }
@@ -122,10 +127,12 @@ class ImmutableService
             if ($bid->getQuantity() <= $previousBid->getQuantity()) {
                 // we have to refund bid
                 $this->messageService->transferToken(
+                    Message::TASK_REFUND_BID,
                     $auction->getTokenType(),
                     $bid->getQuantity(),
                     $bid->getDecimals(),
-                    $bid->getOwner()
+                    $bid->getOwner(),
+                    $bid
                 );
 
                 throw new BadBidException('Bid should be superior to previous bid. Refund in progress.');
@@ -136,10 +143,12 @@ class ImmutableService
 
             // we refund previous bid
             $this->messageService->transferToken(
+                Message::TASK_REFUND_BID,
                 $auction->getTokenType(),
                 $previousBid->getQuantity(),
                 $previousBid->getDecimals(),
-                $previousBid->getOwner()
+                $previousBid->getOwner(),
+                $previousBid
             );
         }
     }

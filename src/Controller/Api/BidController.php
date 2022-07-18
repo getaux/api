@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Auction;
 use App\Entity\Bid;
+use App\Entity\Message;
 use App\Form\AddBidType;
 use App\Form\CancelBidType;
 use App\Form\Filters\FilterAuctionsType;
@@ -355,10 +356,12 @@ class BidController extends AbstractController
         // add to queue
         if ($bid->getAuction() instanceof Auction) {
             $messageService->transferToken(
+                Message::TASK_REFUND_BID,
                 $bid->getAuction()->getTokenType(),
                 $bid->getQuantity(),
                 $bid->getDecimals(),
-                $bid->getOwner()
+                $bid->getOwner(),
+                $bid
             );
         }
 

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Auction;
+use App\Entity\Bid;
 use App\Entity\Message;
+use App\Entity\MessageableInterface;
 use App\Repository\MessageRepository;
 
 class MessageService
@@ -14,10 +17,12 @@ class MessageService
     }
 
     public function transferNFT(
-        string $internalId,
-        string $tokenId,
-        string $tokenAddress,
-        string $receiverAddress
+        string  $message,
+        string  $internalId,
+        string  $tokenId,
+        string  $tokenAddress,
+        string  $receiverAddress,
+        Auction $auction
     ): void {
         $body = [
             'asset' => [
@@ -28,14 +33,16 @@ class MessageService
             'recipient' => $receiverAddress
         ];
 
-        $this->createMessage(Message::TASK_TRANSFER_NFT, $body);
+        $this->createMessage($message, $body, $auction);
     }
 
     public function transferToken(
+        string $message,
         string $tokenType,
         string $quantity,
         int    $decimals,
-        string $receiverAddress
+        string $receiverAddress,
+        Bid    $bid
     ): void {
         $body = [
             'token' => [
@@ -46,16 +53,19 @@ class MessageService
             'recipient' => $receiverAddress
         ];
 
-        $this->createMessage(Message::TASK_TRANSFER_TOKEN, $body);
+        $this->createMessage($message, $body, $bid);
     }
 
-    private function createMessage(string $task, array $body): void
+    private function createMessage(string $task, array $body, MessageableInterface $entity): void
     {
         $message = new Message();
         $message->setStatus(Message::STATUS_TODO);
         $message->setBody($body);
         $message->setTask($task);
         $message->setCreatedAt(new \DateTimeImmutable());
+
+        $class = (new \ReflectionClass($entity))->getShortName();
+        $message->{'set' . $class}($entity);
 
         $this->messageRepository->add($message);
     }

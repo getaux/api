@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Entity\Asset;
 use App\Entity\Auction;
 use App\Entity\Bid;
+use App\Entity\Message;
 use App\Repository\AuctionRepository;
 use App\Service\MessageService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -23,7 +24,8 @@ class AuctionUpdateStatusCommand extends Command
     public function __construct(
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService,
-        private readonly float             $percentFees
+        private readonly float             $percentFees,
+        private readonly string            $feesWallet
     ) {
         parent::__construct();
     }
@@ -43,30 +45,48 @@ class AuctionUpdateStatusCommand extends Command
             if ($lastBid instanceof Bid) {
                 // transfer NFT to higher bidder
                 $this->messageService->transferNFT(
+                    Message::TASK_TRANSFER_NFT,
                     $auction->getAsset()->getInternalId(),
                     $auction->getAsset()->getTokenId(),
                     $auction->getAsset()->getTokenAddress(),
-                    $lastBid->getOwner()
+                    $lastBid->getOwner(),
+                    $auction
                 );
 
-                $quantity = bcmul($lastBid->getQuantity(), (string)(1 - ($this->percentFees / 100)));
+                $quantityToPay = bcmul($lastBid->getQuantity(), (string)(1 - ($this->percentFees / 100)));
 
                 // transfer token to seller
                 $this->messageService->transferToken(
+                    Message::TASK_PAYMENT,
                     $auction->getTokenType(),
-                    $quantity,
+                    $quantityToPay,
                     $lastBid->getDecimals(),
-                    $auction->getOwner()
+                    $auction->getOwner(),
+                    $lastBid
+                );
+
+                $quantityFees = bcsub($lastBid->getQuantity(), $quantityToPay);
+
+                // transfer fees to wallet
+                $this->messageService->transferToken(
+                    Message::TASK_PAYMENT_FEES,
+                    $auction->getTokenType(),
+                    $quantityFees,
+                    $lastBid->getDecimals(),
+                    $this->feesWallet,
+                    $lastBid
                 );
 
                 $auction->setStatus(Auction::STATUS_FILLED);
             } else {
                 // even, return NFT to the seller
                 $this->messageService->transferNFT(
+                    Message::TASK_REFUND_NFT,
                     $auction->getAsset()->getInternalId(),
                     $auction->getAsset()->getTokenId(),
                     $auction->getAsset()->getTokenAddress(),
-                    $auction->getOwner()
+                    $auction->getOwner(),
+                    $auction
                 );
 
                 $auction->setStatus(Auction::STATUS_EXPIRED);

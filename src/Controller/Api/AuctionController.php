@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Asset;
 use App\Entity\Auction;
+use App\Entity\Message;
 use App\Form\AddAuctionType;
 use App\Form\CancelAuctionType;
 use App\Form\Filters\FilterAuctionsType;
@@ -327,10 +328,12 @@ class AuctionController extends AbstractController
         // add to queue
         if ($auction->getAsset() instanceof Asset) {
             $messageService->transferNFT(
+                Message::TASK_REFUND_NFT,
                 $auction->getAsset()->getInternalId(),
                 $auction->getAsset()->getTokenId(),
                 $auction->getAsset()->getTokenAddress(),
-                $auction->getOwner()
+                $auction->getOwner(),
+                $auction
             );
         }
 

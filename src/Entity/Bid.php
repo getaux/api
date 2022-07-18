@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[OA\Schema(description: 'Bids linked to an asset', required: [
     'transferId', 'quantity', 'decimals', 'tokenType'
 ])]
-class Bid
+class Bid implements MessageableInterface
 {
     public const STATUS_ACTIVE = 'active';
     public const STATUS_OVERPAID = 'overpaid';

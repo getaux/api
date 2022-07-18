@@ -20,12 +20,18 @@ class Message
         self::STATUS_ERROR,
     ];
 
-    public const TASK_TRANSFER_TOKEN = 'task-transfer-token';
+    public const TASK_REFUND_BID = 'task-refund-bid';
+    public const TASK_REFUND_NFT = 'task-refund-nft';
     public const TASK_TRANSFER_NFT = 'task-transfer-nft';
+    public const TASK_PAYMENT = 'task-payment';
+    public const TASK_PAYMENT_FEES = 'task-payment-fees';
 
     public const TASKS = [
-        self::TASK_TRANSFER_TOKEN,
+        self::TASK_REFUND_BID,
+        self::TASK_REFUND_NFT,
         self::TASK_TRANSFER_NFT,
+        self::TASK_PAYMENT,
+        self::TASK_PAYMENT_FEES,
     ];
 
     #[ORM\Id]
@@ -53,6 +59,12 @@ class Message
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $processedAt;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Auction $auction = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Bid $bid = null;
 
     public function getId(): ?int
     {
@@ -143,6 +155,30 @@ class Message
     public function setTask(string $task): self
     {
         $this->task = $task;
+
+        return $this;
+    }
+
+    public function getAuction(): ?Auction
+    {
+        return $this->auction;
+    }
+
+    public function setAuction(?Auction $auction): self
+    {
+        $this->auction = $auction;
+
+        return $this;
+    }
+
+    public function getBid(): ?Bid
+    {
+        return $this->bid;
+    }
+
+    public function setBid(?Bid $bid): self
+    {
+        $this->bid = $bid;
 
         return $this;
     }
