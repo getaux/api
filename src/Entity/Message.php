@@ -34,7 +34,7 @@ class Message
         self::TASK_PAYMENT,
         self::TASK_PAYMENT_FEES,
     ];
-    
+
     public const GROUP_GET_MESSAGE = 'get-message';
 
     #[ORM\Id]
@@ -71,10 +71,10 @@ class Message
     #[Groups([self::GROUP_GET_MESSAGE])]
     private ?\DateTimeImmutable $processedAt;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     private ?Auction $auction = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     private ?Bid $bid = null;
 
     public function getId(): ?int

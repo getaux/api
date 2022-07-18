@@ -43,6 +43,11 @@ class AuctionUpdateStatusCommand extends Command
 
             // auction has bid
             if ($lastBid instanceof Bid) {
+
+                // update status of auction
+                $auction->setStatus(Auction::STATUS_FILLED);
+                $this->auctionRepository->add($auction);
+
                 // transfer NFT to higher bidder
                 $this->messageService->transferNFT(
                     Message::TASK_TRANSFER_NFT,
@@ -76,9 +81,12 @@ class AuctionUpdateStatusCommand extends Command
                     $this->feesWallet,
                     $lastBid
                 );
-
-                $auction->setStatus(Auction::STATUS_FILLED);
             } else {
+
+                // update status of auction
+                $auction->setStatus(Auction::STATUS_EXPIRED);
+                $this->auctionRepository->add($auction);
+
                 // even, return NFT to the seller
                 $this->messageService->transferNFT(
                     Message::TASK_REFUND_NFT,
@@ -88,12 +96,7 @@ class AuctionUpdateStatusCommand extends Command
                     $auction->getOwner(),
                     $auction
                 );
-
-                $auction->setStatus(Auction::STATUS_EXPIRED);
             }
-
-            // then update auction status
-            $this->auctionRepository->add($auction);
         }
 
         return Command::SUCCESS;
