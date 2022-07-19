@@ -54,6 +54,11 @@ class AddAuctionType extends AbstractType
             'constraints' => [
                 new NotBlank([], 'Missing parameter: endAt field should not be blank'),
             ],
+        ])->add('startAt', DateTimeType::class, [
+            'empty_data' => (new \DateTime())->format('Y-m-d H:i:00'),
+            'required' => false,
+            'widget' => 'single_text',
+            'html5' => false,
         ]);
     }
 

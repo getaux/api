@@ -32,6 +32,25 @@ class AuctionUpdateStatusCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->openScheduledAuctions();
+        $this->closeEndedAuctions();
+
+        return Command::SUCCESS;
+    }
+
+    private function openScheduledAuctions(): void
+    {
+        $scheduledAuctions = $this->auctionRepository->findScheduledAuctions(new \DateTime());
+
+        /** @var Auction $scheduledAuction */
+        foreach ($scheduledAuctions as $scheduledAuction) {
+            $scheduledAuction->setStatus(Auction::STATUS_ACTIVE);
+            $this->auctionRepository->add($scheduledAuction);
+        }
+    }
+
+    private function closeEndedAuctions(): void
+    {
         $endedAuctions = $this->auctionRepository->findEndedAuctions(new \DateTime());
 
         foreach ($endedAuctions as $auction) {
@@ -98,7 +117,5 @@ class AuctionUpdateStatusCommand extends Command
                 );
             }
         }
-
-        return Command::SUCCESS;
     }
 }

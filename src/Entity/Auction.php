@@ -23,12 +23,14 @@ class Auction implements MessageableInterface
     public const STATUS_FILLED = 'filled';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_EXPIRED = 'expired';
+    public const STATUS_SCHEDULED = 'scheduled';
 
     public const STATUS = [
         self::STATUS_ACTIVE,
         self::STATUS_FILLED,
         self::STATUS_CANCELLED,
         self::STATUS_EXPIRED,
+        self::STATUS_SCHEDULED,
     ];
 
     public const TYPE_ENGLISH = 'english';
@@ -55,7 +57,7 @@ class Auction implements MessageableInterface
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
-    #[OA\Property(description: 'Type of the auction', enum: self::TYPES, example: self::TYPE_DUTCH)]
+    #[OA\Property(description: 'Type of the auction', enum: self::TYPES, example: self::TYPE_ENGLISH)]
     private string $type;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -133,6 +135,17 @@ class Auction implements MessageableInterface
     #[Gedmo\Timestampable(on: 'update')]
     #[ORM\Column(type: 'datetime_immutable')]
     protected \DateTimeImmutable $updatedAt;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
+    #[OA\Property(
+        description: 'Start timestamp of this auction',
+        type: 'string',
+        format: 'datetime',
+        example: '2030-12-01T00:00:00.000Z',
+        nullable: true,
+    )]
+    private \DateTimeImmutable $startAt;
 
     #[ORM\Column(type: 'datetime_immutable')]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION, Asset::GROUP_GET_ASSET, Bid::GROUP_GET_BID])]
@@ -356,6 +369,23 @@ class Auction implements MessageableInterface
     public function setReserveQuantity(?string $reserveQuantity): self
     {
         $this->reserveQuantity = $reserveQuantity;
+
+        return $this;
+    }
+
+    public function getStartAt(): \DateTimeInterface
+    {
+        return $this->startAt;
+    }
+
+    public function setStartAt(\DateTimeInterface $startAt): self
+    {
+        $dateFormat = $startAt->format('Y-m-d H:i:00');
+        $dateImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateFormat);
+
+        if ($dateImmutable) {
+            $this->startAt = $dateImmutable;
+        }
 
         return $this;
     }

@@ -108,4 +108,15 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
 
         return (array)$qb->getQuery()->getResult();
     }
+
+    public function findScheduledAuctions(\DateTime $startAt): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.startAt <= :startAt')
+            ->setParameter('startAt', $startAt)
+            ->andWhere('a.status = :status')
+            ->setParameter('status', Auction::STATUS_SCHEDULED);
+
+        return (array)$qb->getQuery()->getResult();
+    }
 }

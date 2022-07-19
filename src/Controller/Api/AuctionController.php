@@ -231,10 +231,18 @@ class AuctionController extends AbstractController
         ]);
 
         if ($auctionExist instanceof Auction) {
-            throw new ConflictHttpException('Auction already exists');
+            throw new ConflictHttpException(
+                sprintf('Auction already exists with transfer %s', $auction->getTransferId())
+            );
         }
 
         $immutableService->checkAuctionDeposit($auction);
+
+        // auction is a schedule one
+        if ($auction->getStartAt() instanceof \DateTimeInterface && $auction->getStartAt() > new \DateTime()) {
+            $auction->setStatus(Auction::STATUS_SCHEDULED);
+        }
+
         $auctionRepository->add($auction);
 
         return $this->json($auction, Response::HTTP_OK, [], [
