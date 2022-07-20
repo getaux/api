@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use OpenApi\Attributes as OA;
 use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\Collection as EntityCollection;
 
 #[ORM\Entity(repositoryClass: AssetRepository::class)]
 #[OA\Schema(description: 'Asset linked to auction(s)')]
@@ -20,6 +21,7 @@ class Asset
     public const GROUP_GET_ASSET_WITH_AUCTIONS = 'get-asset-with-auctions';
     public const GROUP_GET_ASSET = 'get-asset';
     public const GROUP_UPDATE_ASSET = 'update-asset';
+    public const GROUP_GET_ASSET_WITH_COLLECTION = 'get-asset-with-collection';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,11 +34,6 @@ class Asset
     #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
     #[OA\Property(description: 'Internal Immutable X Internal ID')]
     private string $internalId = '';
-
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([Auction::GROUP_GET_AUCTION, self::GROUP_GET_ASSET])]
-    #[OA\Property(description: 'Address of the ERC721 contract')]
-    private string $tokenAddress = '';
 
     #[ORM\OneToMany(mappedBy: 'asset', targetEntity: Auction::class)]
     #[Groups([self::GROUP_GET_ASSET_WITH_AUCTIONS])]
@@ -75,6 +72,16 @@ class Asset
     #[OA\Property(description: 'Internal Immutable X Internal ID')]
     private string $tokenId = '';
 
+    #[ORM\ManyToOne(inversedBy: 'assets')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::GROUP_GET_ASSET_WITH_COLLECTION])]
+    #[OA\Property(
+        ref: '#/components/schemas/Collection.item',
+        description: 'Collection related to the asset',
+        type: 'object',
+    )]
+    private EntityCollection $collection;
+
     public function __construct()
     {
         $this->auctions = new ArrayCollection();
@@ -93,18 +100,6 @@ class Asset
     public function setInternalId(string $internalId): self
     {
         $this->internalId = $internalId;
-
-        return $this;
-    }
-
-    public function getTokenAddress(): string
-    {
-        return $this->tokenAddress;
-    }
-
-    public function setTokenAddress(string $tokenAddress): self
-    {
-        $this->tokenAddress = $tokenAddress;
 
         return $this;
     }
@@ -195,6 +190,18 @@ class Asset
     public function setTokenId(string $tokenId): self
     {
         $this->tokenId = $tokenId;
+
+        return $this;
+    }
+
+    public function getCollection(): EntityCollection
+    {
+        return $this->collection;
+    }
+
+    public function setCollection(EntityCollection $collection): self
+    {
+        $this->collection = $collection;
 
         return $this;
     }

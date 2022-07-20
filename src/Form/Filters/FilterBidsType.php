@@ -19,10 +19,10 @@ class FilterBidsType extends AbstractFilterType
     {
         $this->buildPaginate($builder, self::ORDER_FIELDS);
 
-        $builder->add('auction_id', IntegerType::class, [
+        $builder->add('auctionId', IntegerType::class, [
             'required' => false,
             'constraints' => [
-                new Positive([], 'Invalid parameter: auction_id should be positive'),
+                new Positive([], 'Invalid parameter: auctionId should be positive'),
             ],
         ])->add('status', TextType::class, [
             'constraints' => [

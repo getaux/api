@@ -42,8 +42,8 @@ class AssetController extends AbstractController
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'integer'),
-            )
-            , new OA\Parameter(
+            ),
+            new OA\Parameter(
                 name: 'orderBy',
                 description: 'Property to sort by',
                 in: 'query',
@@ -111,6 +111,7 @@ class AssetController extends AbstractController
             'groups' => [
                 Asset::GROUP_GET_ASSET,
                 Asset::GROUP_GET_ASSET_WITH_AUCTIONS,
+                Asset::GROUP_GET_ASSET_WITH_COLLECTION,
             ],
         ]);
     }
@@ -138,6 +139,7 @@ class AssetController extends AbstractController
             'groups' => [
                 Asset::GROUP_GET_ASSET,
                 Asset::GROUP_GET_ASSET_WITH_AUCTIONS,
+                Asset::GROUP_GET_ASSET_WITH_COLLECTION,
             ],
         ]);
     }
@@ -162,7 +164,7 @@ class AssetController extends AbstractController
         }
 
         $immutableService->updateAsset(
-            $asset->getTokenAddress(),
+            $asset->getCollection(),
             $asset->getInternalId(),
             $asset,
         );

@@ -54,13 +54,16 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
 
         if (isset($filters['collection'])) {
             $qb->join('a.asset', 'asset')
-                ->andWhere('asset.tokenAddress = :collection')
+                ->join('asset.collection', 'c')
+                ->andWhere('c.address = :collection')
                 ->setParameter('collection', $filters['collection']);
-
-            unset($filters['collection']);
         }
 
         foreach ($filters as $field => $value) {
+            if ($filters['collection']) {
+                continue;
+            }
+
             $qb->andWhere('a.' . $field . ' = :' . $field)
                 ->setParameter($field, $value);
         }
@@ -74,7 +77,8 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
 
         if (isset($filters['collection'])) {
             $qb->join('a.asset', 'asset')
-                ->andWhere('asset.tokenAddress = :collection')
+                ->join('asset.collection', 'c')
+                ->andWhere('c.address = :collection')
                 ->setParameter('collection', $filters['collection']);
 
             unset($filters['collection']);

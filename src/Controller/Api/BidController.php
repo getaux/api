@@ -86,12 +86,12 @@ class BidController extends AbstractController
                 ],
             ),
             new OA\Parameter(
-                name: 'auction_id',
+                name: 'auctionId',
                 description: 'AuctionX Internal Auction ID',
                 in: 'query',
                 required: false,
                 examples: [
-                    new OA\Schema(title: 'auction_id', type: 'string'),
+                    new OA\Schema(title: 'auctionId', type: 'string'),
                 ],
             ),
             new OA\Parameter(

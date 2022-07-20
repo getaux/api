@@ -8,10 +8,12 @@ use App\Client\ImmutableXClient;
 use App\Entity\Asset;
 use App\Entity\Auction;
 use App\Entity\Bid;
+use App\Entity\Collection;
 use App\Entity\Message;
 use App\Helper\TokenHelper;
 use App\Repository\AssetRepository;
 use App\Repository\BidRepository;
+use App\Repository\CollectionRepository;
 use App\Service\Exception\BadBidException;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,6 +26,7 @@ class ImmutableService
         private readonly string                 $escrowWallet,
         private readonly MessageService         $messageService,
         private readonly BidRepository          $bidRepository,
+        private readonly CollectionRepository   $collectionRepository,
     ) {
     }
 
@@ -36,14 +39,22 @@ class ImmutableService
             throw new \Exception(sprintf('Receiver of transfer %s is invalid', $auction->getTransferId()), 400);
         }
 
+        $collection = $this->collectionRepository->findOneBy([
+            'address' => $transfer['token']['data']['token_address'],
+        ]);
+
+        if (!$collection instanceof Collection) {
+            $collection = $this->updateCollection($transfer['token']['data']['token_address'], new Collection());
+        }
+
         $asset = $this->assetRepository->findOneBy([
-            'tokenAddress' => $transfer['token']['data']['token_address'],
+            'collection' => $collection,
             'tokenId' => $transfer['token']['data']['token_id'],
         ]);
 
         // then fetch asset data
         $assetEntity = $this->updateAsset(
-            $transfer['token']['data']['token_address'],
+            $collection,
             $transfer['token']['data']['token_id'],
             $asset ?? new Asset()
         );
@@ -52,23 +63,39 @@ class ImmutableService
         $auction->setOwner($transfer['user']);
     }
 
-    public function updateAsset(string $tokenAddress, string $internalId, Asset $asset): Asset
+    public function updateAsset(Collection $collection, string $internalId, Asset $asset): Asset
     {
         $apiAssetResult = $this->immutableXClient->get(
-            sprintf('v1/assets/%s/%s', $tokenAddress, $internalId)
+            sprintf('v1/assets/%s/%s', $collection->getAddress(), $internalId)
         );
 
         $asset->setInternalId($apiAssetResult['id']);
         $asset->setTokenId($apiAssetResult['token_id']);
         $asset->setImageUrl($apiAssetResult['image_url']);
         $asset->setName((string)$apiAssetResult['name']);
-        $asset->setTokenAddress($apiAssetResult['token_address']);
         $asset->setInternalId($apiAssetResult['token_id']);
 
         $this->entityManager->persist($asset);
         $this->entityManager->flush();
 
         return $asset;
+    }
+
+    public function updateCollection(string $collectionAddress, Collection $collection): Collection
+    {
+        $apiCollectionResult = $this->immutableXClient->get(
+            sprintf('v1/collections/%s', $collectionAddress)
+        );
+
+        $collection->setName($apiCollectionResult['name']);
+        $collection->setAddress($apiCollectionResult['address']);
+        $collection->setDescription($apiCollectionResult['description']);
+        $collection->setImage($apiCollectionResult['collection_image_url']);
+
+        $this->entityManager->persist($collection);
+        $this->entityManager->flush();
+
+        return $collection;
     }
 
     public function checkBidDeposit(Bid $bid, Auction $auction): void

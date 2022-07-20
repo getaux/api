@@ -72,7 +72,7 @@ class AuctionUpdateStatusCommand extends Command
                     Message::TASK_TRANSFER_NFT,
                     $auction->getAsset()->getInternalId(),
                     $auction->getAsset()->getTokenId(),
-                    $auction->getAsset()->getTokenAddress(),
+                    $auction->getAsset()->getCollection()->getAddress(),
                     $lastBid->getOwner(),
                     $auction
                 );
@@ -111,7 +111,7 @@ class AuctionUpdateStatusCommand extends Command
                     Message::TASK_REFUND_NFT,
                     $auction->getAsset()->getInternalId(),
                     $auction->getAsset()->getTokenId(),
-                    $auction->getAsset()->getTokenAddress(),
+                    $auction->getAsset()->getCollection()->getAddress(),
                     $auction->getOwner(),
                     $auction
                 );

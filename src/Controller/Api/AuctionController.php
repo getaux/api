@@ -339,7 +339,7 @@ class AuctionController extends AbstractController
                 Message::TASK_REFUND_NFT,
                 $auction->getAsset()->getInternalId(),
                 $auction->getAsset()->getTokenId(),
-                $auction->getAsset()->getTokenAddress(),
+                $auction->getAsset()->getCollection()->getAddress(),
                 $auction->getOwner(),
                 $auction
             );

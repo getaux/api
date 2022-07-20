@@ -16,8 +16,11 @@ nelmio_api_doc:
             - { alias: Auction.list, type: App\Entity\Auction, groups: [ get-auction ] }
             - { alias: Auction.post, type: App\Entity\Auction, groups: [ post-auction ] }
             # Assets
-            - { alias: Asset.item, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions ] }
+            - { alias: Asset.item, type: App\Entity\Asset, groups: [ get-asset, get-asset-with-auctions, get-asset-with-collection ] }
             - { alias: Asset.list, type: App\Entity\Asset, groups: [ get-asset ] }
+            # Collections
+            - { alias: Collection.item, type: App\Entity\Collection, groups: [ get-collection ] }
+            - { alias: Collection.list, type: App\Entity\Collection, groups: [ get-collection ] }
             # Bids
             - { alias: Bid.item, type: App\Entity\Bid, groups: [ get-bid, get-bid-with-auction ] }
             - { alias: Bid.list, type: App\Entity\Bid, groups: [ get-bid ] }

@@ -49,12 +49,12 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
                 ->setParameter('invalidStatus', Bid::STATUS_INVALID);
         }
 
-        if (isset($filters['auction_id'])) {
+        if (isset($filters['auctionId'])) {
             $qb->join('b.auction', 'a')
                 ->andWhere('a.id = :auctionId')
-                ->setParameter('auctionId', $filters['auction_id']);
+                ->setParameter('auctionId', $filters['auctionId']);
 
-            unset($filters['auction_id']);
+            unset($filters['auctionId']);
         }
 
         foreach ($filters as $field => $value) {
@@ -74,12 +74,12 @@ class BidRepository extends ServiceEntityRepository implements FilterableReposit
                 ->setParameter('invalidStatus', Bid::STATUS_INVALID);
         }
 
-        if (isset($filters['auction_id'])) {
+        if (isset($filters['auctionId'])) {
             $qb->join('b.auction', 'a')
                 ->andWhere('a.id = :auctionId')
-                ->setParameter('auctionId', $filters['auction_id']);
+                ->setParameter('auctionId', $filters['auctionId']);
 
-            unset($filters['auction_id']);
+            unset($filters['auctionId']);
         }
 
         if (count($order) > 0) {

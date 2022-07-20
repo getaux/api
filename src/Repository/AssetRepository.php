@@ -53,8 +53,9 @@ class AssetRepository extends ServiceEntityRepository implements FilterableRepos
             ->select('count (a.id) as totalResults');
 
         if (isset($filters['collection'])) {
-            $qb->andWhere('a.tokenAddress = :collection')
-                ->setParameter('collection', $filters['collection']);
+            $qb->join('a.collection', 'c')
+                ->andWhere('c.address = :address')
+                ->setParameter('address', $filters['collection']);
         }
 
         return $qb->getQuery()->getSingleScalarResult();
@@ -65,8 +66,9 @@ class AssetRepository extends ServiceEntityRepository implements FilterableRepos
         $qb = $this->createQueryBuilder('a');
 
         if (isset($filters['collection'])) {
-            $qb->andWhere('a.tokenAddress = :collection')
-                ->setParameter('collection', $filters['collection']);
+            $qb->join('a.collection', 'c')
+                ->andWhere('c.address = :address')
+                ->setParameter('address', $filters['collection']);
         }
 
         if (count($order) > 0) {
