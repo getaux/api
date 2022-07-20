@@ -60,7 +60,7 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
         }
 
         foreach ($filters as $field => $value) {
-            if ($filters['collection']) {
+            if ($field === 'collection') {
                 continue;
             }
 
