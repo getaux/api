@@ -69,6 +69,10 @@ class ImmutableService
             sprintf('v1/assets/%s/%s', $collection->getAddress(), $internalId)
         );
 
+        if ($asset->getInternalId() === '') {
+            $asset->setCollection($collection);
+        }
+
         $asset->setInternalId($apiAssetResult['id']);
         $asset->setTokenId($apiAssetResult['token_id']);
         $asset->setImageUrl($apiAssetResult['image_url']);

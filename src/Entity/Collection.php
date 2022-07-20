@@ -22,22 +22,22 @@ class Collection
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column()]
-    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION])]
+    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION, Auction::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'AuctionX internal ID of the collection', format: 'int')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION])]
+    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION, Auction::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Collection contract address')]
     private string $address;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION])]
+    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION, Auction::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Name of the collection')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION])]
+    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION, Auction::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Image URL of the collection')]
     private ?string $image = null;
 
@@ -45,7 +45,7 @@ class Collection
     private DoctrineCollection $assets;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION])]
+    #[Groups([Asset::GROUP_GET_ASSET, self::GROUP_GET_COLLECTION, Auction::GROUP_GET_AUCTION_WITH_ASSET])]
     #[OA\Property(description: 'Description of the collection')]
     private ?string $description = null;
 

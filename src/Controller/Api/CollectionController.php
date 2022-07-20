@@ -73,8 +73,7 @@ class CollectionController extends AbstractController
         FilterService        $filterService,
         CollectionRepository $collectionRepository,
         CollectionService    $collectionService
-    ): Response
-    {
+    ): Response {
         $form = $this->createForm(FilterCollectionsType::class);
         $form->submit($request->query->all());
 

@@ -161,6 +161,7 @@ class AuctionController extends AbstractController
                 Auction::GROUP_GET_AUCTION,
                 Auction::GROUP_GET_AUCTION_WITH_ASSET,
                 Auction::GROUP_GET_AUCTION_WITH_BIDS,
+                Asset::GROUP_GET_ASSET_WITH_COLLECTION,
             ],
         ]);
     }
@@ -189,6 +190,7 @@ class AuctionController extends AbstractController
                 Auction::GROUP_GET_AUCTION,
                 Auction::GROUP_GET_AUCTION_WITH_ASSET,
                 Auction::GROUP_GET_AUCTION_WITH_BIDS,
+                Asset::GROUP_GET_ASSET_WITH_COLLECTION,
             ],
         ]);
     }
@@ -250,6 +252,7 @@ class AuctionController extends AbstractController
                 Auction::GROUP_GET_AUCTION,
                 Auction::GROUP_GET_AUCTION_WITH_ASSET,
                 Auction::GROUP_GET_AUCTION_WITH_BIDS,
+                Asset::GROUP_GET_ASSET_WITH_COLLECTION,
             ],
         ]);
     }
