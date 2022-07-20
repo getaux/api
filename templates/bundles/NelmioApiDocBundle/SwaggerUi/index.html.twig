@@ -3,3 +3,14 @@
 {% block header_block %}
     <header></header>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        window.addEventListener('load', () => {
+            document.querySelector('hgroup.main span').innerHTML += `<small style="background-color:#ED6A5A;">
+                <pre class="version" style="color: ">{{ env == 'prod' ? 'mainnet' : 'testnet'}}</pre>
+            </small>`
+        })
+    </script>
+{% endblock %}
