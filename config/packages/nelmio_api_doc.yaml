@@ -3,7 +3,7 @@ nelmio_api_doc:
         info:
             title: AuctionX API
             description: AuctionX brings auctions to the Immutable X ecosystem.
-            version: 1.0.8
+            version: 1.1.0
         servers:
             - url: 'https://%env(SERVER_NAME)%'
     areas: # to filter documented areas
