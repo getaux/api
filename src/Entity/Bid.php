@@ -22,12 +22,14 @@ class Bid implements MessageableInterface
     public const STATUS_OVERPAID = 'overpaid';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_INVALID = 'invalid';
+    public const STATUS_WON = 'won';
 
     public const STATUS = [
         self::STATUS_ACTIVE,
         self::STATUS_OVERPAID,
         self::STATUS_CANCELLED,
         self::STATUS_INVALID,
+        self::STATUS_WON,
     ];
 
     public const GROUP_GET_BIDS = 'get-bids';

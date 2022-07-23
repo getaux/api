@@ -123,8 +123,7 @@ class ImmutableService
 
         if ($token !== $auction->getTokenType()) {
             // we refund bid
-            $this->messageService->transferToken(
-                Message::TASK_REFUND_BID,
+            $this->refundBind(
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
@@ -136,11 +135,22 @@ class ImmutableService
             );
         }
 
+        if ($auction->getOwner() !== $transfer['user']) {
+            // we refund bid
+            $this->refundBind(
+                $token,
+                $transfer['token']['data']['quantity'],
+                $transfer['token']['data']['decimals'],
+                $transfer['user'],
+                $bid
+            );
+            throw new BadBidException('You can\'t bid on your own auction...');
+        }
+
         // check if bid quantity is superior to auction minimum price
         if ($transfer['token']['data']['quantity'] < $auction->getQuantity()) {
             // we refund bid
-            $this->messageService->transferToken(
-                Message::TASK_REFUND_BID,
+            $this->refundBind(
                 $token,
                 $transfer['token']['data']['quantity'],
                 $transfer['token']['data']['decimals'],
@@ -157,8 +167,7 @@ class ImmutableService
             // check if the new bid is higher than previous one
             if ($bid->getQuantity() <= $previousBid->getQuantity()) {
                 // we have to refund bid
-                $this->messageService->transferToken(
-                    Message::TASK_REFUND_BID,
+                $this->refundBind(
                     $auction->getTokenType(),
                     $bid->getQuantity(),
                     $bid->getDecimals(),
@@ -173,8 +182,7 @@ class ImmutableService
             $this->bidRepository->add($previousBid);
 
             // we refund previous bid
-            $this->messageService->transferToken(
-                Message::TASK_REFUND_BID,
+            $this->refundBind(
                 $auction->getTokenType(),
                 $previousBid->getQuantity(),
                 $previousBid->getDecimals(),
@@ -182,5 +190,17 @@ class ImmutableService
                 $previousBid
             );
         }
+    }
+
+    public function refundBind(string $token, string $quantity, int $decimals, string $user, Bid $bid): void
+    {
+        $this->messageService->transferToken(
+            Message::TASK_REFUND_BID,
+            $token,
+            $quantity,
+            $decimals,
+            $user,
+            $bid
+        );
     }
 }

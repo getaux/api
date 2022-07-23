@@ -9,6 +9,7 @@ use App\Entity\Auction;
 use App\Entity\Bid;
 use App\Entity\Message;
 use App\Repository\AuctionRepository;
+use App\Repository\BidRepository;
 use App\Service\MessageService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AuctionUpdateStatusCommand extends Command
 {
     public function __construct(
+        private readonly BidRepository     $bidRepository,
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService,
         private readonly float             $percentFees,
@@ -63,9 +65,13 @@ class AuctionUpdateStatusCommand extends Command
             // auction has bid
             if ($lastBid instanceof Bid) {
 
-                // update status of auction
+                // update status of auction to 'filled'
                 $auction->setStatus(Auction::STATUS_FILLED);
                 $this->auctionRepository->add($auction);
+
+                // update status of bid to 'won'
+                $lastBid->setStatus(Bid::STATUS_WON);
+                $this->bidRepository->add($lastBid);
 
                 // transfer NFT to higher bidder
                 $this->messageService->transferNFT(
