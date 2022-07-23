@@ -230,9 +230,4 @@ class Bid implements MessageableInterface
 
         return $this;
     }
-
-    public function __toString(): string
-    {
-        return 'GIVE ME A FUCKING CLUE' . $this->getTransferId() . ' ' . $this->auction->getId();
-    }
 }
