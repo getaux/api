@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Auction;
+use App\Entity\Bid;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -73,7 +74,10 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
 
     public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
     {
-        $qb = $this->createQueryBuilder('a');
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.bids', 'bids')
+            ->andWhere('bids.status != :status')
+            ->setParameter('status', Bid::STATUS_INVALID);
 
         if (isset($filters['collection'])) {
             $qb->join('a.asset', 'asset')
