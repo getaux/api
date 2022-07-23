@@ -74,10 +74,7 @@ class AuctionRepository extends ServiceEntityRepository implements FilterableRep
 
     public function customFindAll(array $filters, array $order, int $limit, ?int $offset): array
     {
-        $qb = $this->createQueryBuilder('a')
-            ->leftJoin('a.bids', 'bids')
-            ->andWhere('bids.status != :status')
-            ->setParameter('status', Bid::STATUS_INVALID);
+        $qb = $this->createQueryBuilder('a');
 
         if (isset($filters['collection'])) {
             $qb->join('a.asset', 'asset')
