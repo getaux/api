@@ -135,7 +135,7 @@ class ImmutableService
             );
         }
 
-        if ($auction->getOwner() !== $transfer['user']) {
+        if ($auction->getOwner() === $transfer['user']) {
             // we refund bid
             $this->refundBind(
                 $token,
