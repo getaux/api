@@ -212,7 +212,7 @@ class Auction implements MessageableInterface
 
     public function setQuantity(string $quantity): self
     {
-        $this->quantity = $quantity;
+        $this->quantity = number_format((float)$quantity, 0, '', '');
 
         return $this;
     }
@@ -370,6 +370,10 @@ class Auction implements MessageableInterface
 
     public function setReserveQuantity(?string $reserveQuantity): self
     {
+        if ($reserveQuantity) {
+            $reserveQuantity = number_format((float)$reserveQuantity, 0, '', '');
+        }
+
         $this->reserveQuantity = $reserveQuantity;
 
         return $this;

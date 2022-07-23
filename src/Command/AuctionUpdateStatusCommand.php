@@ -77,7 +77,13 @@ class AuctionUpdateStatusCommand extends Command
                     $auction
                 );
 
-                $quantityToPay = bcmul($lastBid->getQuantity(), (string)(1 - ($this->percentFees / 100)));
+                if ($this->percentFees > 0) {
+                    $quantityToPay = bcmul($lastBid->getQuantity(), (string)(1 - ($this->percentFees / 100)));
+                    $hasFees = true;
+                } else {
+                    $quantityToPay = $lastBid->getQuantity();
+                    $hasFees = false;
+                }
 
                 // transfer token to seller
                 $this->messageService->transferToken(
@@ -89,17 +95,19 @@ class AuctionUpdateStatusCommand extends Command
                     $lastBid
                 );
 
-                $quantityFees = bcsub($lastBid->getQuantity(), $quantityToPay);
+                if ($hasFees) {
+                    $quantityFees = bcsub($lastBid->getQuantity(), $quantityToPay);
 
-                // transfer fees to wallet
-                $this->messageService->transferToken(
-                    Message::TASK_PAYMENT_FEES,
-                    $auction->getTokenType(),
-                    $quantityFees,
-                    $lastBid->getDecimals(),
-                    $this->feesWallet,
-                    $lastBid
-                );
+                    // transfer fees to wallet
+                    $this->messageService->transferToken(
+                        Message::TASK_PAYMENT_FEES,
+                        $auction->getTokenType(),
+                        $quantityFees,
+                        $lastBid->getDecimals(),
+                        $this->feesWallet,
+                        $lastBid
+                    );
+                }
             } else {
 
                 // update status of auction
