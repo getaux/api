@@ -9,11 +9,13 @@ use App\Repository\AuctionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: AuctionRepository::class)]
+#[UniqueEntity('transferId')]
 #[OA\Schema(description: 'Auction linked to an asset', required: [
     'type', 'status', 'transferId', 'quantity', 'decimals', 'tokenType', 'endAt'
 ])]
@@ -65,7 +67,7 @@ class Auction implements MessageableInterface
     #[OA\Property(description: 'Status of the auction', enum: self::STATUS)]
     private string $status = self::STATUS_ACTIVE;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', unique: true)]
     #[Groups([self::GROUP_GET_AUCTION, self::GROUP_POST_AUCTION])]
     #[OA\Property(description: 'IMX transfer ID (asset deposit)', example: 4452442)]
     private string $transferId;

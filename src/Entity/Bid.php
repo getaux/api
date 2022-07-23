@@ -8,9 +8,11 @@ use App\Repository\BidRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OpenApi\Attributes as OA;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BidRepository::class)]
+#[UniqueEntity('transferId')]
 #[OA\Schema(description: 'Bids linked to an asset', required: [
     'transferId', 'quantity', 'decimals', 'tokenType'
 ])]
@@ -56,7 +58,7 @@ class Bid implements MessageableInterface
     #[OA\Property(description: 'Status of the bid', enum: self::STATUS)]
     private string $status = self::STATUS_ACTIVE;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', unique: true)]
     #[Groups([self::GROUP_GET_BID])]
     #[OA\Property(description: 'IMX transfer ID (bid deposit)', example: 4452442)]
     private string $transferId;
