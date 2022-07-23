@@ -71,10 +71,10 @@ class Message
     #[Groups([self::GROUP_GET_MESSAGE])]
     private ?\DateTimeImmutable $processedAt;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     private ?Auction $auction = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     private ?Bid $bid = null;
 
     public function getId(): ?int

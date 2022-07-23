@@ -45,7 +45,7 @@ class Bid implements MessageableInterface
     #[OA\Property(description: 'AuctionX internal ID of the bid', format: 'int')]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: Auction::class, cascade: ["persist"], inversedBy: 'bids')]
+    #[ORM\ManyToOne(targetEntity: Auction::class, cascade: ['persist'], inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([self::GROUP_GET_BID_WITH_AUCTION])]
     #[OA\Property(
