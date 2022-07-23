@@ -1,6 +1,9 @@
 when@prod:
     sentry:
         dsn: '%env(SENTRY_DSN)%'
+        options:
+            integrations:
+                - 'Sentry\Integration\IgnoreErrorsIntegration'
 
     services:
         Sentry\Integration\IgnoreErrorsIntegration:
@@ -9,4 +12,6 @@ when@prod:
                     ignore_exceptions:
                         - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
                         - Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+                        - Symfony\Component\HttpKernel\Exception\ConflictHttpException
                         - Symfony\Component\Console\Exception\CommandNotFoundException
+                        - App\Client\ImmutableXClientException
