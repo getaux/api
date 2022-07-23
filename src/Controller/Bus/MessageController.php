@@ -93,6 +93,10 @@ class MessageController extends AbstractController
 
         return $this->json([
             'message' => $message,
+        ], Response::HTTP_OK, [], [
+            'groups' => [
+                Message::GROUP_GET_MESSAGE,
+            ]
         ]);
     }
 
