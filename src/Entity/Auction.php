@@ -275,6 +275,10 @@ class Auction implements MessageableInterface
      */
     public function getBids(): Collection|ArrayCollection
     {
+        if(count($this->bids) === 0){
+            return $this->bids;
+        }
+
         /** @var Bid $bid */
         foreach ($this->bids as $bid) {
             if (in_array($bid->getStatus(), [
