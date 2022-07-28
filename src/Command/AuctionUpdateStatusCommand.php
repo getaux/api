@@ -147,6 +147,6 @@ class AuctionUpdateStatusCommand extends Command
 
     private function addLog(string $log): void
     {
-        $this->io->write(sprintf('%s - %s', date('Y-m-d H:i:s'), $log));
+        $this->io->writeln(sprintf('%s - %s', date('Y-m-d H:i:s'), $log));
     }
 }
