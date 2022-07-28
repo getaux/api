@@ -271,27 +271,11 @@ class Auction implements MessageableInterface
     }
 
     /**
-     * @return Collection<int, Bid>|ArrayCollection<(int|string), Bid>
+     * @return Collection<int, Bid>
      */
-    public function getBids(): Collection|ArrayCollection
+    public function getBids(): Collection
     {
-        if(count($this->bids) === 0){
-            return $this->bids;
-        }
-
-        /** @var Bid $bid */
-        foreach ($this->bids as $bid) {
-            if (in_array($bid->getStatus(), [
-                Bid::STATUS_INVALID,
-                Bid::STATUS_CANCELLED
-            ])) {
-                $this->bids->removeElement($bid);
-            }
-        }
-
-        // we have to create a new collection to reset keys
-        // @phpstan-ignore-next-line
-        return new ArrayCollection($this->bids->getValues());
+        return $this->bids;
     }
 
     public function addBid(Bid $bid): self
