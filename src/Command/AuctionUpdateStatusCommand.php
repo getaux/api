@@ -76,6 +76,7 @@ class AuctionUpdateStatusCommand extends Command
 
             // auction has bid
             if ($lastBid instanceof Bid) {
+                $this->addLog(sprintf('Auction #%s has bid(s)', $auction->getId()));
 
                 // update status of auction to 'filled'
                 $auction->setStatus(Auction::STATUS_FILLED);
@@ -127,6 +128,7 @@ class AuctionUpdateStatusCommand extends Command
                     );
                 }
             } else {
+                $this->addLog(sprintf('Auction #%s has no bid', $auction->getId()));
 
                 // update status of auction
                 $auction->setStatus(Auction::STATUS_EXPIRED);
