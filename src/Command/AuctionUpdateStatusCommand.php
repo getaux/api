@@ -15,6 +15,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:auction:update-status',
@@ -22,18 +23,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class AuctionUpdateStatusCommand extends Command
 {
+    private SymfonyStyle $io;
+
     public function __construct(
         private readonly BidRepository     $bidRepository,
         private readonly AuctionRepository $auctionRepository,
         private readonly MessageService    $messageService,
         private readonly float             $percentFees,
         private readonly string            $feesWallet
-    ) {
+    )
+    {
         parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->io = new SymfonyStyle($input, $output);
+
         $this->openScheduledAuctions();
         $this->closeEndedAuctions();
 
@@ -42,10 +48,13 @@ class AuctionUpdateStatusCommand extends Command
 
     private function openScheduledAuctions(): void
     {
+        $this->addLog('Check scheduled auctions');
         $scheduledAuctions = $this->auctionRepository->findScheduledAuctions(new \DateTime());
 
         /** @var Auction $scheduledAuction */
         foreach ($scheduledAuctions as $scheduledAuction) {
+            $this->addLog(sprintf('Start auction #%s', $scheduledAuction->getId()));
+
             $scheduledAuction->setStatus(Auction::STATUS_ACTIVE);
             $this->auctionRepository->add($scheduledAuction);
         }
@@ -53,9 +62,12 @@ class AuctionUpdateStatusCommand extends Command
 
     private function closeEndedAuctions(): void
     {
+        $this->addLog('Check ended auctions');
         $endedAuctions = $this->auctionRepository->findEndedAuctions(new \DateTime());
 
         foreach ($endedAuctions as $auction) {
+            $this->addLog(sprintf('End auction #%s', $auction->getId()));
+
             if (!$auction->getAsset() instanceof Asset) {
                 continue;
             }
@@ -131,5 +143,10 @@ class AuctionUpdateStatusCommand extends Command
                 );
             }
         }
+    }
+
+    private function addLog(string $log): void
+    {
+        $this->io->write(sprintf('%s - %s', date('Y-m-d H:i:s'), $log));
     }
 }
