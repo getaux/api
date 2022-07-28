@@ -130,10 +130,6 @@ class AuctionUpdateStatusCommand extends Command
             } else {
                 $this->addLog(sprintf('Auction #%s has no bid', $auction->getId()));
 
-                // update status of auction
-                $auction->setStatus(Auction::STATUS_EXPIRED);
-                $this->auctionRepository->add($auction);
-
                 // even, return NFT to the seller
                 $this->messageService->transferNFT(
                     Message::TASK_REFUND_NFT,
@@ -143,6 +139,10 @@ class AuctionUpdateStatusCommand extends Command
                     $auction->getOwner(),
                     $auction
                 );
+
+                // update status of auction
+                $auction->setStatus(Auction::STATUS_EXPIRED);
+                $this->auctionRepository->add($auction);
             }
         }
     }
